@@ -1,11 +1,15 @@
 // ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loneguide/card.dart';
+import 'package:http/http.dart' as http;
+import 'package:html/dom.dart' as dom;
 
 void main() {
   runApp(const MyApp());
 }
+
+final cardNumber = List<int>.generate(3, (int index) => index);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,57 +40,34 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<int> whatCardIsSelected = [];
-  bool switchValue1 = false;
+
+  @override
+  void initState() {
+    super.initState();
+    getWebsiteData();
+  }
+
+  // var cardId = List<int>.generate(4, (index) => index);
+
+  Future getWebsiteData() async {
+    final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
+    final response = await http.get(url);
+    dom.Document html = dom.Document.html(response.body);
+
+    final fightNames = html
+        .querySelectorAll(
+            ".view-display-id-upcoming > article:nth-child(3)")
+        .map((element) => element.innerHtml.trim())
+        .toList();
+
+    print("count ${fightNames.length}");
+    for (final names in fightNames) {
+      debugPrint(names);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget card(nrKarty, bool vall) {
-      return Card(
-        shape: const StadiumBorder(),
-        color: const Color.fromARGB(255, 32, 32, 32),
-        child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Row(children: [
-              Expanded(
-                  flex: 2,
-                  child: Row(
-                    children: [
-                      avatar("https://fwcdn.pl/ppo/47/36/4736/450638.2.jpg"),
-                      Text(
-                        " V S ",
-                        style: GoogleFonts.overpass(
-                            fontSize: 25, fontWeight: FontWeight.bold),
-                      ),
-                      avatar(
-                          "https://img.a.transfermarkt.technology/portrait/big/506948-1596018768.jpg?lm=1")
-                    ],
-                  )),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: Row(
-                    children: [
-                      Text("karta nr $nrKarty"),
-                      Switch(
-                        activeColor: const Color.fromARGB(255, 155, 10, 0),
-                        onChanged: (isOn) {
-                          if (isOn) {
-                            whatCardIsSelected.add(nrKarty);
-                          }
-                          print(whatCardIsSelected);
-
-                          setState(() {
-                            switchValue1 = isOn;
-                          });
-                        },
-                        value: vall,
-                      )
-                    ],
-                  ))
-            ])),
-      );
-    }
-
-    List<Widget> cardsNumVal = List.generate(5, (index) => card(index, switchValue1));
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -102,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/UFC_Logo.svg/1280px-UFC_Logo.svg.png"),
               ),
               Text("REMINDER",
-                  style: GoogleFonts.elsieSwashCaps(
+                  style: GoogleFonts.actor(
                       fontWeight: FontWeight.w900,
                       fontSize: 28,
                       color: const Color.fromARGB(255, 189, 13, 0)),
@@ -118,12 +99,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 GoogleFonts.overpass(fontSize: 25, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
-          Column(children: cardsNumVal),
+          // Column(children: cardsNumVal),
+          Column(
+            children: const [
+              MyCard(cardId: 1),
+              MyCard(cardId: 2),
+              MyCard(cardId: 3),
+            ],
+          )
         ]));
   }
-
-  Widget avatar(String imgurl) => CircleAvatar(
-      backgroundColor: Colors.white,
-      radius: 31,
-      child: CircleAvatar(radius: 30, backgroundImage: NetworkImage(imgurl)));
 }
