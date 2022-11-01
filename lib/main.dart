@@ -1,4 +1,3 @@
-// ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
@@ -53,6 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
 
+    final fightAvatars = html
+        .querySelectorAll(
+            "div.field > article.media")
+        .map((element) => element.innerHtml.toString());
+
+    print("count ${fightAvatars.length}");
+    for (final imgs in fightAvatars) {
+      debugPrint(imgs);
+    }
+
     final fightNames = html
         .querySelectorAll("h3.c-card-event--result__headline > a")
         .map((element) => element.innerHtml.toString())
@@ -104,10 +113,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: getWebsiteData().then((value) => value),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return const Text('Press button to start');
                     case ConnectionState.waiting:
-                      return const Text('Awaiting result...');
+                      return const CircularProgressIndicator(
+                        backgroundColor: Colors.white,
+                        color: Colors.black,
+                        strokeWidth: 12,
+                      );
                     default:
                       if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
