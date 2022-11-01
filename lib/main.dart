@@ -9,7 +9,7 @@ void main() {
   runApp(const MyApp());
 }
 
-final cardNumber = List<int>.generate(3, (int index) => index);
+// final cardNumber = List<int>.generate(3, (int index) => index);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -39,15 +39,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<int> whatCardIsSelected = [];
-
   @override
   void initState() {
     super.initState();
     getWebsiteData();
   }
-
   // var cardId = List<int>.generate(4, (index) => index);
+
+  List<String> fightersNames = [];
 
   Future getWebsiteData() async {
     final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
@@ -55,15 +54,15 @@ class _MyHomePageState extends State<MyHomePage> {
     dom.Document html = dom.Document.html(response.body);
 
     final fightNames = html
-        .querySelectorAll(
-            ".view-display-id-upcoming > article:nth-child(3)")
-        .map((element) => element.innerHtml.trim())
+        .querySelectorAll("h3.c-card-event--result__headline > a")
+        .map((element) => element.innerHtml.toString())
         .toList();
 
     print("count ${fightNames.length}");
-    for (final names in fightNames) {
-      debugPrint(names);
+    for (final name in fightNames) {
+      debugPrint(name);
     }
+    fightersNames = fightNames;
   }
 
   @override
@@ -102,9 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // Column(children: cardsNumVal),
           Column(
             children: const [
-              MyCard(cardId: 1),
-              MyCard(cardId: 2),
-              MyCard(cardId: 3),
+              MyCard(cardId: 1, fighterName: ""),
+              MyCard(cardId: 2, fighterName: ""),
+              MyCard(cardId: 3, fighterName: ""),
             ],
           )
         ]));
