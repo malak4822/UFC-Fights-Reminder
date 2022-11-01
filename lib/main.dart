@@ -57,13 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
         .querySelectorAll("h3.c-card-event--result__headline > a")
         .map((element) => element.innerHtml.toString())
         .toList();
-
-    print("count ${fightNames.length}");
-    for (final name in fightNames) {
-      debugPrint(name);
-    }
     fightersNames = fightNames;
   }
+
+  int fir = 1;
+  int sec = 2;
+  int third = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +99,34 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           // Column(children: cardsNumVal),
           Column(
-            children: const [
-              MyCard(cardId: 1, fighterName: ""),
-              MyCard(cardId: 2, fighterName: ""),
-              MyCard(cardId: 3, fighterName: ""),
+            children: [
+              FutureBuilder(
+                future: getWebsiteData().then((value) => value),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.none:
+                      return const Text('Press button to start');
+                    case ConnectionState.waiting:
+                      return const Text('Awaiting result...');
+                    default:
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return Column(
+                          children: [
+                            MyCard(
+                                cardId: fir, fighterName: fightersNames[fir]),
+                            MyCard(
+                                cardId: sec, fighterName: fightersNames[sec]),
+                            MyCard(
+                                cardId: third,
+                                fighterName: fightersNames[third]),
+                          ],
+                        );
+                      }
+                  }
+                },
+              ),
             ],
           )
         ]));

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({super.key, @required this.cardId, @required this.fighterName});
 
   @override
   State<MyCard> createState() => _CardState();
-  final cardId ;
+  final cardId;
   final fighterName;
 }
 
@@ -22,20 +23,17 @@ class _CardState extends State<MyCard> {
           child: Column(
             children: [
               Row(children: [
-                // Expanded(
-                //     flex: 2,
-                //     child: Row(
-                //       children: [
-                //         avatar("https://fwcdn.pl/ppo/47/36/4736/450638.2.jpg"),
-                //         Text(
-                //           " V S ",
-                //           style: GoogleFonts.overpass(
-                //               fontSize: 25, fontWeight: FontWeight.bold),
-                //         ),
-                //         avatar(
-                //             "https://img.a.transfermarkt.technology/portrait/big/506948-1596018768.jpg?lm=1")
-                //       ],
-                //     )),
+                Expanded(
+                    flex: 2,
+                    child: Row(
+                      children: [
+                        Text(
+                          widget.fighterName,
+                          style:
+                              GoogleFonts.overpass(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )),
                 Align(
                     alignment: Alignment.centerRight,
                     child: Row(
