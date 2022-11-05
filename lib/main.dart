@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: const TextTheme(
-          bodyText2: TextStyle(),
+          bodyMedium: TextStyle(),
         ).apply(
           bodyColor: Colors.white,
         ),
@@ -53,8 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     dom.Document html = dom.Document.html(response.body);
 
     final fightAvatars = html
-        .querySelectorAll(
-            "div.field > article.media")
+        .querySelectorAll("div.field > article.media")
         .map((element) => element.innerHtml.toString());
 
     print("count ${fightAvatars.length}");
