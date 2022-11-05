@@ -41,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    getWebsiteData();
   }
   // var cardId = List<int>.generate(4, (index) => index);
 
@@ -52,27 +51,32 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
 
+// ZDJĘCIA
     final fightAvatars = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
         .take(6)
-        .map((element) => element.attributes['src'])
-        .toList();
+        .map((element) => element.attributes['src']);
+    print("Wyłapano ${fightAvatars.length} zdjęć zawodników");
 
-    // .querySelectorAll("div.field > article.media < img.")
-    // .take(4)
-    // .map((element) => element.innerHtml.toString());
+// ZAWODNICY
+    final fightNames = html
+        .querySelectorAll(
+            "div.c-card-event--result__info > h3.c-card-event--result__headline > a)")
+        .take(8)
+        .map((element) => element.innerHtml);
+    print("Wyłapano ${fightNames.length} imion zawodników");
 
-    print("count ${fightAvatars.length}");
+    var jednoImie;
 
-    for (final imgs in fightAvatars) {
-      debugPrint(imgs.toString());
+    for (jednoImie in fightNames) {
+      fightersNames.add(jednoImie);
     }
 
-    final fightNames = html
-        .querySelectorAll("h3.c-card-event--result__headline > a")
-        .map((element) => element.innerHtml.toString())
-        .toList();
-    fightersNames = fightNames;
+    // .querySelectorAll("h3.c-card-event--result__headline > a")
+    // .map((element) => element.innerHtml.toString())
+    // .toList();
+
+    print(fightersNames);
   }
 
   int fir = 1;
