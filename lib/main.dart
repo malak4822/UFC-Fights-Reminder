@@ -53,12 +53,19 @@ class _MyHomePageState extends State<MyHomePage> {
     dom.Document html = dom.Document.html(response.body);
 
     final fightAvatars = html
-        .querySelectorAll("div.field > article.media")
-        .map((element) => element.innerHtml.toString());
+        .getElementsByClassName("image-style-event-results-athlete-headshot")
+        .take(6)
+        .map((element) => element.attributes['src'])
+        .toList();
+
+    // .querySelectorAll("div.field > article.media < img.")
+    // .take(4)
+    // .map((element) => element.innerHtml.toString());
 
     print("count ${fightAvatars.length}");
+
     for (final imgs in fightAvatars) {
-      debugPrint(imgs);
+      debugPrint(imgs.toString());
     }
 
     final fightNames = html
