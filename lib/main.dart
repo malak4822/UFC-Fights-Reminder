@@ -45,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // var cardId = List<int>.generate(4, (index) => index);
 
   List<String> fightersNames = [];
+  List<String> avatarUrl = [];
 
   Future getWebsiteData() async {
     final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
@@ -55,8 +56,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final fightAvatars = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
         .take(6)
-        .map((element) => element.attributes['src']);
-    print("Wyłapano ${fightAvatars.length} zdjęć zawodników");
+        .map((element) => element.attributes['src'].toString())
+        .toList();
+    print("Wyłapano ${fightAvatars.length} zdjęć zawodników, brzmią tak :");
+
+    for (var jedno in fightAvatars) {
+      debugPrint(jedno);
+    }
+    avatarUrl = fightAvatars;
 
 // ZAWODNICY
     final fightNames = html
@@ -130,13 +137,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                           children: [
+                            MyCard(cardId: fir, fighterName: fightersNames[0]),
+                            MyCard(cardId: sec, fighterName: fightersNames[1]),
                             MyCard(
-                                cardId: fir, fighterName: fightersNames[fir]),
-                            MyCard(
-                                cardId: sec, fighterName: fightersNames[sec]),
-                            MyCard(
-                                cardId: third,
-                                fighterName: fightersNames[third]),
+                                cardId: third, fighterName: fightersNames[2]),
                           ],
                         );
                       }
