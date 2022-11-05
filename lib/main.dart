@@ -63,19 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
         .querySelectorAll(
             "div.c-card-event--result__info > h3.c-card-event--result__headline > a)")
         .take(8)
-        .map((element) => element.innerHtml);
+        .map((element) => element.innerHtml)
+        .toList();
     print("Wyłapano ${fightNames.length} imion zawodników");
-
-    var jednoImie;
-
-    for (jednoImie in fightNames) {
-      fightersNames.add(jednoImie);
-    }
 
     // .querySelectorAll("h3.c-card-event--result__headline > a")
     // .map((element) => element.innerHtml.toString())
     // .toList();
-
+    fightersNames = fightNames;
     print(fightersNames);
   }
 
