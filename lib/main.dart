@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
@@ -51,6 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
+//DATY
+    final date = html
+        .querySelectorAll("tz-change-data > a")
+        .take(3)
+        .map((element) => element.innerHtml);
 
 // ZDJĘCIA
     final fightAvatars = html
@@ -58,18 +65,14 @@ class _MyHomePageState extends State<MyHomePage> {
         .take(6)
         .map((element) => element.attributes['src'].toString())
         .toList();
-    print("Wyłapano ${fightAvatars.length} zdjęć zawodników, brzmią tak :");
-
-    for (var jedno in fightAvatars) {
-      debugPrint(jedno);
-    }
+    print("Wyłapano ${fightAvatars.length} zdjęć zawodników");
     avatarUrl = fightAvatars;
 
 // ZAWODNICY
     final fightNames = html
         .querySelectorAll(
             "div.c-card-event--result__info > h3.c-card-event--result__headline > a)")
-        .take(8)
+        .take(3)
         .map((element) => element.innerHtml)
         .toList();
     print("Wyłapano ${fightNames.length} imion zawodników");
@@ -78,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // .map((element) => element.innerHtml.toString())
     // .toList();
     fightersNames = fightNames;
-    print(fightersNames);
   }
 
   int fir = 1;
@@ -89,10 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(25))),
+          backgroundColor: Colors.black45,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -101,23 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Image.network(
                     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/UFC_Logo.svg/1280px-UFC_Logo.svg.png"),
               ),
-              Text("REMINDER",
-                  style: GoogleFonts.actor(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 28,
-                      color: const Color.fromARGB(255, 189, 13, 0)),
-                  textAlign: TextAlign.center),
             ],
           ),
         ),
-        body: ListView(children: [
+        body: SafeArea(
+            child: ListView(children: [
           const SizedBox(height: 20),
-          Text(
-            "Remind about your fav fights ",
-            style:
-                GoogleFonts.overpass(fontSize: 25, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
+
           // Column(children: cardsNumVal),
           Column(
             children: [
@@ -129,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return const CircularProgressIndicator(
                         backgroundColor: Colors.white,
                         color: Colors.black,
-                        strokeWidth: 12,
+                        strokeWidth: 3,
                       );
                     default:
                       if (snapshot.hasError) {
@@ -137,10 +126,24 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                           children: [
-                            MyCard(cardId: fir, fighterName: fightersNames[0]),
-                            MyCard(cardId: sec, fighterName: fightersNames[1]),
                             MyCard(
-                                cardId: third, fighterName: fightersNames[2]),
+                              cardId: fir,
+                              fighterName: fightersNames[0],
+                              firPhotoUrl: avatarUrl[0],
+                              secPhotoUrl: avatarUrl[1],
+                            ),
+                            MyCard(
+                              cardId: sec,
+                              fighterName: fightersNames[1],
+                              firPhotoUrl: avatarUrl[2],
+                              secPhotoUrl: avatarUrl[3],
+                            ),
+                            MyCard(
+                              cardId: third,
+                              fighterName: fightersNames[2],
+                              firPhotoUrl: avatarUrl[4],
+                              secPhotoUrl: avatarUrl[5],
+                            ),
                           ],
                         );
                       }
@@ -149,6 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )
-        ]));
+        ])));
   }
 }
