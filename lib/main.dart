@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -9,8 +6,6 @@ import 'package:html/dom.dart' as dom;
 void main() {
   runApp(const MyApp());
 }
-
-// final cardNumber = List<int>.generate(3, (int index) => index);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -58,34 +53,22 @@ class _MyHomePageState extends State<MyHomePage> {
         .querySelectorAll("tz-change-data > a")
         .take(3)
         .map((element) => element.innerHtml);
-
 // ZDJĘCIA
-    final fightAvatars = html
+    final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(6)
+        .take(8)
         .map((element) => element.attributes['src'].toString())
         .toList();
-    print("Wyłapano ${fightAvatars.length} zdjęć zawodników");
-    avatarUrl = fightAvatars;
 
+    avatarUrl = fightAvatar;
 // ZAWODNICY
     final fightNames = html
-        .querySelectorAll(
-            "div.c-card-event--result__info > h3.c-card-event--result__headline > a)")
-        .take(3)
+        .querySelectorAll("h3.c-card-event--result__headline > a)")
+        .take(8)
         .map((element) => element.innerHtml)
         .toList();
-    print("Wyłapano ${fightNames.length} imion zawodników");
-
-    // .querySelectorAll("h3.c-card-event--result__headline > a")
-    // .map((element) => element.innerHtml.toString())
-    // .toList();
     fightersNames = fightNames;
   }
-
-  int fir = 1;
-  int sec = 2;
-  int third = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
         body: SafeArea(
             child: ListView(children: [
           const SizedBox(height: 20),
-
-          // Column(children: cardsNumVal),
           Column(
             children: [
               FutureBuilder(
@@ -125,27 +106,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         return Text('Error: ${snapshot.error}');
                       } else {
                         return Column(
-                          children: [
-                            MyCard(
-                              cardId: fir,
-                              fighterName: fightersNames[0],
-                              firPhotoUrl: avatarUrl[0],
-                              secPhotoUrl: avatarUrl[1],
-                            ),
-                            MyCard(
-                              cardId: sec,
-                              fighterName: fightersNames[1],
-                              firPhotoUrl: avatarUrl[2],
-                              secPhotoUrl: avatarUrl[3],
-                            ),
-                            MyCard(
-                              cardId: third,
-                              fighterName: fightersNames[2],
-                              firPhotoUrl: avatarUrl[4],
-                              secPhotoUrl: avatarUrl[5],
-                            ),
-                          ],
-                        );
+                            children: List.generate(
+                          3,
+                          (index) {
+                            return MyCard(
+                              cardId: index,
+                              fighterName: fightersNames[index].toString(),
+                              firPhotoUrl: avatarUrl[index].toString(),
+                              secPhotoUrl: avatarUrl[index].toString(),
+                            );
+                          },
+                        ));
                       }
                   }
                 },
