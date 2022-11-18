@@ -56,18 +56,27 @@ class _MyHomePageState extends State<MyHomePage> {
 // ZDJĘCIA
     final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(8)
+        .take(14)
         .map((element) => element.attributes['src'].toString())
         .toList();
 
-    avatarUrl = fightAvatar;
+    String doubleAvatars = "";
+    int i = 0;
+    while (i < 6) {
+      doubleAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
+      avatarUrl.add(doubleAvatars);
+      i = i + 2;
+    }
+
 // ZAWODNICY
     final fightNames = html
         .querySelectorAll("h3.c-card-event--result__headline > a)")
-        .take(8)
+        .take(4)
         .map((element) => element.innerHtml)
         .toList();
     fightersNames = fightNames;
+
+    print(avatarUrl);
   }
 
   @override
@@ -113,7 +122,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               cardId: index,
                               fighterName: fightersNames[index].toString(),
                               firPhotoUrl: avatarUrl[index].toString(),
-                              secPhotoUrl: avatarUrl[index].toString(),
                             );
                           },
                         ));

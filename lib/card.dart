@@ -7,7 +7,6 @@ class MyCard extends StatefulWidget {
     @required this.cardId,
     @required this.fighterName,
     @required this.firPhotoUrl,
-    @required this.secPhotoUrl,
   });
 
   @override
@@ -15,7 +14,6 @@ class MyCard extends StatefulWidget {
   final cardId;
   final fighterName;
   final firPhotoUrl;
-  final secPhotoUrl;
 }
 
 bool isDialogShown = false;
@@ -71,7 +69,7 @@ class _CardState extends State<MyCard> {
                           widget.fighterName.toString(),
                           textAlign: TextAlign.center,
                         )),
-                        Image.network(widget.secPhotoUrl,
+                        Image.network(widget.firPhotoUrl,
                             height: 90, cacheHeight: 90),
                         Expanded(
                             child: Align(
