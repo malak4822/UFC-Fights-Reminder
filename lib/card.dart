@@ -20,7 +20,6 @@ bool isDialogShown = false;
 bool shouldRemind = false;
 
 class _CardState extends State<MyCard> {
-
   void showDialog() {
     setState(() {
       if (isDialogShown) {
@@ -38,12 +37,12 @@ class _CardState extends State<MyCard> {
           visible: isDialogShown,
           child: FutureBuilder(
               builder: (BuildContext context, AsyncSnapshot snapshot) {
-                return const AlertDialog(
-                  title: Text("Ostrzenie"),
-                  actions: [Text("Es")],
-                  backgroundColor: Colors.green,
-                );
-              })),
+            return const AlertDialog(
+              title: Text("Ostrzenie"),
+              actions: [Text("Es")],
+              backgroundColor: Colors.green,
+            );
+          })),
       GestureDetector(
           onDoubleTap: showDialog,
           child: Card(
@@ -60,8 +59,7 @@ class _CardState extends State<MyCard> {
                             height: 90, cacheHeight: 90),
                         Expanded(
                             child: Text(
-                          style:
-                              GoogleFonts.overpass(fontWeight: FontWeight.bold),
+                          style: GoogleFonts.overpass(),
                           widget.fighterName.toString(),
                           textAlign: TextAlign.center,
                         )),

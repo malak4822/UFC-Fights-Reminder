@@ -46,48 +46,45 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> fightersNames = [];
   List<String> avatarUrl = [];
 
-  final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
-
   Future getWebsiteBasics() async {
     print("FUNKCJE WYKONANO");
-    final response = await http.get(url);
+    final response = await http
+        .get(Uri.parse("https://www.ufc.com/events#events-list-upcoming"));
     dom.Document html = dom.Document.html(response.body);
 
     final response1 = await http.get(Uri.parse(
         "https://www.ufc.com/event/ufc-fight-night-december-03-2022"));
     dom.Document html1 = dom.Document.html(response1.body);
 
-// PODSTAWOWE DANE
+// TRZEBA DODAWAĆ PO 2 BO ZBIERA PO JEDNYM ZDJĘCIU
     final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(30)
+        .take(8)
         .map((element) => element.attributes['src'].toString())
         .toList();
 
     String doublingAvatars = "";
     int i = 0;
-    while (i < 30) {
+    while (i < 8) {
       doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
       avatarUrl.add(doublingAvatars);
       i += 2;
     }
-// getElementsByClassName("c-listing-fight__corner-given-name")
+// TRZEBA BRAĆ PO 4 BO ZBIERA PO IMIENIU A POTEM NAZWISKU
     final fighterName = html1
-        .querySelectorAll(
-            "div.c-listing-fight__corner-name.c-listing-fight__corner-name--red > span")
-        .take(12)
-        .map((element) => element.innerHtml)
+        .querySelectorAll("div.c-listing-fight__corner-name > span")
+        .take(16)
+        .map((e) => e.innerHtml)
         .toList();
 
     int a = 0;
-    String doublingNames = "";
-    while (a < 12) {
-      doublingNames = "${fighterName[a]} ${fighterName[a + 1]}";
-      fightersNames.add(doublingNames);
-      a += 2;
+    String nameAndSurname = "";
+    while (a < 16) {
+      nameAndSurname =
+          "${fighterName[a]} ${fighterName[a + 1]} VS ${fighterName[a + 2]} ${fighterName[a + 3]}";
+      fightersNames.add(nameAndSurname);
+      a = a + 4;
     }
-
-    print(fightersNames);
   }
 
   @override
@@ -127,11 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          5,
+                          4,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              fighterName: fightersNames[index].split(' ').toString(),
+                              fighterName: fightersNames[index],
                               photoUrls: avatarUrl[index].split(' '),
                             );
                           },
