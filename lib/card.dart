@@ -20,9 +20,6 @@ bool isDialogShown = false;
 bool shouldRemind = false;
 
 class _CardState extends State<MyCard> {
-  Future getFightInfo() async {
-    print("FIGHT INFO");
-  }
 
   void showDialog() {
     setState(() {
@@ -40,7 +37,6 @@ class _CardState extends State<MyCard> {
       Visibility(
           visible: isDialogShown,
           child: FutureBuilder(
-              future: getFightInfo().then((value) => value),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 return const AlertDialog(
                   title: Text("Ostrzenie"),

@@ -37,6 +37,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
+    getWebsiteBasics();
+
     super.initState();
   }
   // var cardId = List<int>.generate(4, (index) => index);
@@ -44,37 +46,48 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> fightersNames = [];
   List<String> avatarUrl = [];
 
-  Future getWebsiteData() async {
-    final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
+  final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
+
+  Future getWebsiteBasics() async {
+    print("FUNKCJE WYKONANO");
     final response = await http.get(url);
     dom.Document html = dom.Document.html(response.body);
-//DATY
-    final date = html
-        .querySelectorAll("tz-change-data > a")
-        .take(3)
-        .map((element) => element.innerHtml);
-// ZDJĘCIA
+
+    final response1 = await http.get(Uri.parse(
+        "https://www.ufc.com/event/ufc-fight-night-december-03-2022"));
+    dom.Document html1 = dom.Document.html(response1.body);
+
+// PODSTAWOWE DANE
     final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(20)
+        .take(30)
         .map((element) => element.attributes['src'].toString())
         .toList();
 
-    String doubleAvatars = "";
+    String doublingAvatars = "";
     int i = 0;
-    while (i < 20) {
-      doubleAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
-      avatarUrl.add(doubleAvatars);
+    while (i < 30) {
+      doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
+      avatarUrl.add(doublingAvatars);
       i += 2;
     }
-
-// ZAWODNICY
-    final fightNames = html
-        .querySelectorAll("h3.c-card-event--result__headline > a)")
-        .take(10)
+// getElementsByClassName("c-listing-fight__corner-given-name")
+    final fighterName = html1
+        .querySelectorAll(
+            "div.c-listing-fight__corner-name.c-listing-fight__corner-name--red > span")
+        .take(12)
         .map((element) => element.innerHtml)
         .toList();
-    fightersNames = fightNames;
+
+    int a = 0;
+    String doublingNames = "";
+    while (a < 12) {
+      doublingNames = "${fighterName[a]} ${fighterName[a + 1]}";
+      fightersNames.add(doublingNames);
+      a += 2;
+    }
+
+    print(fightersNames);
   }
 
   @override
@@ -99,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Column(
             children: [
               FutureBuilder(
-                future: getWebsiteData().then((value) => value),
+                future: getWebsiteBasics(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -114,11 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          10,
+                          5,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              fighterName: fightersNames[index].toString(),
+                              fighterName: fightersNames[index].split(' ').toString(),
                               photoUrls: avatarUrl[index].split(' '),
                             );
                           },
