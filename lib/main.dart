@@ -41,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     super.initState();
   }
-  // var cardId = List<int>.generate(4, (index) => index);
 
   List<String> fightersNames = [];
   List<String> avatarUrl = [];
@@ -78,11 +77,10 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
 
     int a = 0;
-    String nameAndSurname = "";
+    String names = "";
     while (a < 16) {
-      nameAndSurname =
-          "${fighterName[a]} ${fighterName[a + 1]} VS ${fighterName[a + 2]} ${fighterName[a + 3]}";
-      fightersNames.add(nameAndSurname);
+      names = "${fighterName[a + 1]} VS ${fighterName[a + 3]}";
+      fightersNames.add(names);
       a = a + 4;
     }
   }
@@ -105,7 +103,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: SafeArea(
             child: ListView(children: [
-          const SizedBox(height: 20),
           Column(
             children: [
               FutureBuilder(

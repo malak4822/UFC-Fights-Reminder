@@ -59,7 +59,8 @@ class _CardState extends State<MyCard> {
                             height: 90, cacheHeight: 90),
                         Expanded(
                             child: Text(
-                          style: GoogleFonts.overpass(),
+                          style:
+                              GoogleFonts.overpass(fontWeight: FontWeight.bold),
                           widget.fighterName.toString(),
                           textAlign: TextAlign.center,
                         )),
