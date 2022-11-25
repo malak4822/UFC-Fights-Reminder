@@ -4,16 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
-    @required this.cardId,
-    @required this.fighterName,
-    @required this.firPhotoUrl,
+    required this.cardId,
+    required this.fighterName,
+    required this.photoUrls,
   });
 
   @override
   State<MyCard> createState() => _CardState();
-  final cardId;
-  final fighterName;
-  final firPhotoUrl;
+  final int cardId;
+  final String fighterName;
+  final List<String> photoUrls;
 }
 
 bool isDialogShown = false;
@@ -60,7 +60,7 @@ class _CardState extends State<MyCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Image.network(widget.firPhotoUrl,
+                        Image.network(widget.photoUrls[0],
                             height: 90, cacheHeight: 90),
                         Expanded(
                             child: Text(
@@ -69,23 +69,18 @@ class _CardState extends State<MyCard> {
                           widget.fighterName.toString(),
                           textAlign: TextAlign.center,
                         )),
-                        Image.network(widget.firPhotoUrl,
+                        Image.network(widget.photoUrls[1],
                             height: 90, cacheHeight: 90),
                         Expanded(
-                            child: Align(
-                                alignment: Alignment.centerRight,
-                                child:
-                                    // Text("karta nr ${widget.cardId.toString()}"),
-                                    Switch(
-                                  activeColor:
-                                      const Color.fromARGB(255, 155, 10, 0),
-                                  onChanged: (isOn) {
-                                    setState(() {
-                                      shouldRemind = isOn;
-                                    });
-                                  },
-                                  value: shouldRemind,
-                                )))
+                            child: Switch(
+                          activeColor: const Color.fromARGB(255, 155, 10, 0),
+                          onChanged: (isOn) {
+                            setState(() {
+                              shouldRemind = isOn;
+                            });
+                          },
+                          value: shouldRemind,
+                        ))
                       ]))))
     ]);
   }

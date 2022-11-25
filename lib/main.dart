@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -44,38 +45,45 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> fightersNames = [];
   List<String> avatarUrl = [];
 
-  Future getWebsiteData() async {
-    final url = Uri.parse("https://www.ufc.com/events#events-list-upcoming");
-    final response = await http.get(url);
+  Future getWebsiteBasics() async {
+    print("FUNKCJE WYKONANO");
+    final response = await http
+        .get(Uri.parse("https://www.ufc.com/events#events-list-upcoming"));
     dom.Document html = dom.Document.html(response.body);
-//DATY
-    final date = html
-        .querySelectorAll("tz-change-data > a")
-        .take(3)
-        .map((element) => element.innerHtml);
-// ZDJĘCIA
+
+    final response1 = await http.get(Uri.parse(
+        "https://www.ufc.com/event/ufc-fight-night-december-03-2022"));
+    dom.Document html1 = dom.Document.html(response1.body);
+
+// TRZEBA DODAWAĆ PO 2 BO ZBIERA PO JEDNYM ZDJĘCIU
     final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(14)
+        .take(12)
         .map((element) => element.attributes['src'].toString())
         .toList();
 
-    String doubleAvatars = "";
+    String doublingAvatars = "";
     int i = 0;
-    while (i < 6) {
-      doubleAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
-      avatarUrl.add(doubleAvatars);
-      i = i + 2;
+    while (i < 12) {
+      doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
+      avatarUrl.add(doublingAvatars);
+      i += 2;
     }
-
-// ZAWODNICY
-    final fightNames = html
-        .querySelectorAll("h3.c-card-event--result__headline > a)")
-        .take(4)
-        .map((element) => element.innerHtml)
+// TRZEBA BRAĆ PO 4 BO ZBIERA PO IMIENIU A POTEM NAZWISKU
+    final fighterName = html1
+        .querySelectorAll("div.c-listing-fight__corner-name > span")
+        .take(24)
+        .map((e) => e.innerHtml)
         .toList();
-    fightersNames = fightNames;
 
+    int a = 0;
+    String names = "";
+    while (a < 24) {
+      names = "${fighterName[a + 1]} VS ${fighterName[a + 3]}";
+      fightersNames.add(names);
+      a = a + 4;
+    }
+    print(fightersNames);
     print(avatarUrl);
   }
 
@@ -100,15 +108,18 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(height: 20),
           Column(
             children: [
+              Text(
+                  style: GoogleFonts.overpass(
+                      fontWeight: FontWeight.bold, fontSize: 22),
+                  "Niedziela, grudzień 4 / 1:00 AM CET"),
               FutureBuilder(
-                future: getWebsiteData().then((value) => value),
+                future: getWebsiteBasics().then((value) => value),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                       return const CircularProgressIndicator(
                         backgroundColor: Colors.white,
                         color: Colors.black,
-                        strokeWidth: 3,
                       );
                     default:
                       if (snapshot.hasError) {
@@ -116,12 +127,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          3,
+                          6,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              fighterName: fightersNames[index].toString(),
-                              firPhotoUrl: avatarUrl[index].toString(),
+                              fighterName: fightersNames[index],
+                              photoUrls: avatarUrl[index].split(' '),
                             );
                           },
                         ));
