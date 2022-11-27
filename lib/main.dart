@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> avatarUrl = [];
 
   Future getWebsiteBasics() async {
-    print("FUNKCJE WYKONANO");
+    debugPrint("FUNKCJE WYKONANO");
     final response = await http
         .get(Uri.parse("https://www.ufc.com/events#events-list-upcoming"));
     dom.Document html = dom.Document.html(response.body);
@@ -58,13 +58,13 @@ class _MyHomePageState extends State<MyHomePage> {
 // TRZEBA DODAWAĆ PO 2 BO ZBIERA PO JEDNYM ZDJĘCIU
     final fightAvatar = html
         .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(8)
+        .take(12)
         .map((element) => element.attributes['src'].toString())
         .toList();
 
     String doublingAvatars = "";
     int i = 0;
-    while (i < 8) {
+    while (i < 12) {
       doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
       avatarUrl.add(doublingAvatars);
       i += 2;
@@ -72,13 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
 // TRZEBA BRAĆ PO 4 BO ZBIERA PO IMIENIU A POTEM NAZWISKU
     final fighterName = html1
         .querySelectorAll("div.c-listing-fight__corner-name > span")
-        .take(16)
+        .take(24)
         .map((e) => e.innerHtml)
         .toList();
 
     int a = 0;
     String names = "";
-    while (a < 16) {
+    while (a < 24) {
       names = "${fighterName[a + 1]} VS ${fighterName[a + 3]}";
       fightersNames.add(names);
       a = a + 4;
