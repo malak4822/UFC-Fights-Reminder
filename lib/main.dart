@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
@@ -37,18 +35,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  List<String> fightersNames = [];
-  List<String> avatarUrl = [];
+  List<String?> fightersNames = [];
+  List<String?> redCornerUrls = [];
+  List<String?> blueCornerUrls = [];
 
   Future getWebsiteBasics() async {
     debugPrint("FUNKCJE WYKONANO");
-    final response =
-        await http.get(Uri.parse("https://www.ufc.com/event/ufc-282"));
+    final response = await http.get(Uri.parse(
+        "https://www.ufc.com/event/ufc-fight-night-december-17-2022"));
     dom.Document html = dom.Document.html(response.body);
 
     final redCornerAvatars = html
@@ -67,25 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final fighterNames = html
         .getElementsByClassName("c-listing-fight__corner-name")
-        .take(1)
-        .map((e) => e.innerHtml)
+        .take(8)
+        .map((e) => e.text.trim())
         .toList();
 
-// var str ="";
-//  $(".my_div").each(function() {
-//     str = str + $(this).html() + " ";
-//  })
+    redCornerUrls = redCornerAvatars;
+    blueCornerUrls = blueCornerAvatars;
 
-    String doublingAvatars = "";
     int i = 0;
-    while (i < 2) {
-      doublingAvatars = "${redCornerAvatars[i]} ${redCornerAvatars[i + 1]}";
-      avatarUrl.add(doublingAvatars);
-      i += 2;
+    while (i < 8) {
+      fightersNames.add(fighterNames[i] + fighterNames[i + 1]);
+      i = i + 2;
     }
-    // log("niebieski narożnik :$redCornerAvatars");
-    // log("niebieski narożnik :$blueCornerAvatars");
-    log("IMIONA :$fighterNames");
   }
 
   @override
@@ -124,11 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          1,
+                          2,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              photoUrls: avatarUrl[index].split(' '),
+                              redCornerImg: redCornerUrls[index]!,
+                              blueCornerImg: blueCornerUrls[index]!,
+                              fighterNames: fightersNames[index]!,
                             );
                           },
                         ));
