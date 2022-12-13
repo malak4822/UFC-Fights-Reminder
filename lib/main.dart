@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
@@ -37,8 +39,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
-    getWebsiteBasics();
-
     super.initState();
   }
 
@@ -47,42 +47,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future getWebsiteBasics() async {
     debugPrint("FUNKCJE WYKONANO");
-    final response = await http
-        .get(Uri.parse("https://www.ufc.com/events#events-list-upcoming"));
+    final response =
+        await http.get(Uri.parse("https://www.ufc.com/event/ufc-282"));
     dom.Document html = dom.Document.html(response.body);
 
-    final response1 = await http.get(Uri.parse(
-        "https://www.ufc.com/event/ufc-fight-night-december-03-2022"));
-    dom.Document html1 = dom.Document.html(response1.body);
-
-// TRZEBA DODAWAĆ PO 2 BO ZBIERA PO JEDNYM ZDJĘCIU
-    final fightAvatar = html
-        .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(12)
-        .map((element) => element.attributes['src'].toString())
+    final redCornerAvatars = html
+        .querySelectorAll(
+            "div.c-listing-fight__corner-image--red > div.layout.layout--onecol > div > img")
+        .take(2)
+        .map((element) => element.attributes["src"])
         .toList();
 
-    String doublingAvatars = "";
-    int i = 0;
-    while (i < 12) {
-      doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
-      avatarUrl.add(doublingAvatars);
-      i += 2;
-    }
-// TRZEBA BRAĆ PO 4 BO ZBIERA PO IMIENIU A POTEM NAZWISKU
-    final fighterName = html1
-        .querySelectorAll("div.c-listing-fight__corner-name > span")
-        .take(24)
+    final blueCornerAvatars = html
+        .querySelectorAll(
+            "div.c-listing-fight__corner-image--blue > div.layout.layout--onecol > div > img")
+        .take(2)
+        .map((element) => element.attributes["src"])
+        .toList();
+
+    final fighterNames = html
+        .getElementsByClassName("c-listing-fight__corner-name")
+        .take(1)
         .map((e) => e.innerHtml)
         .toList();
 
-    int a = 0;
-    String names = "";
-    while (a < 24) {
-      names = "${fighterName[a + 1]} VS ${fighterName[a + 3]}";
-      fightersNames.add(names);
-      a = a + 4;
+// var str ="";
+//  $(".my_div").each(function() {
+//     str = str + $(this).html() + " ";
+//  })
+
+    String doublingAvatars = "";
+    int i = 0;
+    while (i < 2) {
+      doublingAvatars = "${redCornerAvatars[i]} ${redCornerAvatars[i + 1]}";
+      avatarUrl.add(doublingAvatars);
+      i += 2;
     }
+    // log("niebieski narożnik :$redCornerAvatars");
+    // log("niebieski narożnik :$blueCornerAvatars");
+    log("IMIONA :$fighterNames");
   }
 
   @override
@@ -121,11 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          4,
+                          1,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              fighterName: fightersNames[index],
                               photoUrls: avatarUrl[index].split(' '),
                             );
                           },

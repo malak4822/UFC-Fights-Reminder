@@ -5,14 +5,12 @@ class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
     required this.cardId,
-    required this.fighterName,
     required this.photoUrls,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
-  final String fighterName;
   final List<String> photoUrls;
 }
 
@@ -55,17 +53,17 @@ class _CardState extends State<MyCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Image.network(widget.photoUrls[0],
-                            height: 90, cacheHeight: 90),
-                        Expanded(
-                            child: Text(
-                          style:
-                              GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                          widget.fighterName.toString(),
-                          textAlign: TextAlign.center,
-                        )),
-                        Image.network(widget.photoUrls[1],
-                            height: 90, cacheHeight: 90),
+                        // Image.network(widget.photoUrls[0],
+                        //     height: 90, cacheHeight: 90),
+                        // Expanded(
+                        //     child: Text(
+                        //   style:
+                        //       GoogleFonts.overpass(fontWeight: FontWeight.bold),
+                        //   widget.fighterName.toString(),
+                        //   textAlign: TextAlign.center,
+                        // )),
+                        // Image.network(widget.photoUrls[1],
+                        //     height: 90, cacheHeight: 90),
                         Expanded(
                             child: Switch(
                           activeColor: const Color.fromARGB(255, 155, 10, 0),
