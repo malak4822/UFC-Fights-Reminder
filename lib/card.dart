@@ -6,12 +6,14 @@ class MyCard extends StatefulWidget {
     super.key,
     required this.cardId,
     required this.urlString,
+    required this.fighterNames,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
   final List<String> urlString;
+  final List<String> fighterNames;
 }
 
 bool isDialogShown = false;
@@ -38,38 +40,43 @@ class _CardState extends State<MyCard> {
           child: Padding(
               padding: const EdgeInsets.only(top: 10, right: 10),
               child: SizedBox(
-                  height: 100,
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.network(
-                          widget.urlString[0],
-                          alignment: Alignment.topCenter,
-                          fit: BoxFit.cover,
-                          width: 120,
-                        ),
-                        Switch(
-                          activeColor: const Color.fromARGB(255, 155, 10, 0),
-                          onChanged: (isOn) {
-                            setState(() {
-                              shouldRemind = isOn;
-                            });
-                          },
-                          value: shouldRemind,
-                        ),
-                        // Expanded(
-                        //     child: Text(
-                        //   style: GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                        //   widget.fighterNames,
-                        //   textAlign: TextAlign.center,
-                        // )),
-                        Image.network(
-                          widget.urlString[1],
-                          alignment: Alignment.topCenter,
-                          fit: BoxFit.cover,
-                          width: 120,
-                        ),
-                      ]))))
+                  height: 120,
+                  child: Row(children: [
+                    Image.network(
+                      widget.urlString[0],
+                      alignment: Alignment.topCenter,
+                      fit: BoxFit.cover,
+                      width: 120,
+                      cacheWidth: (60 * MediaQuery.of(context).devicePixelRatio)
+                          .round(),
+                    ),
+                    Expanded(
+                        child: Column(children: [
+                      Switch(
+                        activeColor: const Color.fromARGB(255, 155, 10, 0),
+                        onChanged: (isOn) {
+                          setState(() {
+                            shouldRemind = isOn;
+                          });
+                        },
+                        value: shouldRemind,
+                      ),
+                      Text(
+                        style:
+                            GoogleFonts.overpass(fontWeight: FontWeight.bold),
+                        '${widget.fighterNames[0]} VS ${widget.fighterNames[1]}',
+                        textAlign: TextAlign.center,
+                      ),
+                    ])),
+                    Image.network(
+                      widget.urlString[1],
+                      alignment: Alignment.topCenter,
+                      fit: BoxFit.cover,
+                      width: 120,
+                      cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio)
+                          .round(),
+                    ),
+                  ]))))
     ]);
   }
 }

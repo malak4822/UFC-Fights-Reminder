@@ -37,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> fightersNames = [];
+  List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
 
   Future getWebsiteBasics() async {
@@ -49,9 +49,18 @@ class _MyHomePageState extends State<MyHomePage> {
     final entireCard = html
         .querySelectorAll("div > div.c-listing-fight__content-row")
         .take(10)
-        .map((e) => e);
+        .toList();
 
-    var imgs = entireCard
+    final fighterNames = entireCard
+        .map((e) => e
+            .getElementsByClassName('c-listing-fight__corner-name')
+            .map(
+                (e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
+            .toList())
+        .toList();
+    fightersNames = fighterNames;
+
+    final imgs = entireCard
         .map((e) => e
             .querySelectorAll('img')
             .map((a) => a.attributes['src']!.replaceAll(
@@ -60,6 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList())
         .toList();
     imageUrls = imgs;
+
+    log(fighterNames.toString());
   }
 
   @override
@@ -102,8 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             return MyCard(
                               cardId: index,
                               urlString: imageUrls[index],
-                              // blueCornerImg: blueCornerUrls[index]!,
-                              // fighterNames: fightersNames[index]!,
+                              fighterNames: fightersNames[index],
                             );
                           },
                         ));
