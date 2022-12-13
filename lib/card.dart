@@ -5,17 +5,13 @@ class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
     required this.cardId,
-    required this.redCornerImg,
-    required this.blueCornerImg,
-    required this.fighterNames,
+    required this.urlString,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
-  final String redCornerImg;
-  final String blueCornerImg;
-  final String fighterNames;
+  final List<String> urlString;
 }
 
 bool isDialogShown = false;
@@ -41,29 +37,39 @@ class _CardState extends State<MyCard> {
           color: const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
               padding: const EdgeInsets.only(top: 10, right: 10),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.network(widget.redCornerImg, height: 150),
-                    Expanded(
-                        child: Text(
-                      style: GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                      widget.fighterNames,
-                      textAlign: TextAlign.center,
-                    )),
-                    Image.network(widget.blueCornerImg, height: 150),
-                    Expanded(
-                        child: Switch(
-                      activeColor: const Color.fromARGB(255, 155, 10, 0),
-                      onChanged: (isOn) {
-                        setState(() {
-                          shouldRemind = isOn;
-                        });
-                      },
-                      value: shouldRemind,
-                    ))
-                  ])))
+              child: SizedBox(
+                  height: 100,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.network(
+                          widget.urlString[0],
+                          alignment: Alignment.topCenter,
+                          fit: BoxFit.cover,
+                          width: 120,
+                        ),
+                        Switch(
+                          activeColor: const Color.fromARGB(255, 155, 10, 0),
+                          onChanged: (isOn) {
+                            setState(() {
+                              shouldRemind = isOn;
+                            });
+                          },
+                          value: shouldRemind,
+                        ),
+                        // Expanded(
+                        //     child: Text(
+                        //   style: GoogleFonts.overpass(fontWeight: FontWeight.bold),
+                        //   widget.fighterNames,
+                        //   textAlign: TextAlign.center,
+                        // )),
+                        Image.network(
+                          widget.urlString[1],
+                          alignment: Alignment.topCenter,
+                          fit: BoxFit.cover,
+                          width: 120,
+                        ),
+                      ]))))
     ]);
   }
 }

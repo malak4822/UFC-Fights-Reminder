@@ -37,9 +37,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String?> fightersNames = [];
-  List<String?> redCornerUrls = [];
-  List<String?> blueCornerUrls = [];
+  List<String> fightersNames = [];
+  List<List<String>> imageUrls = [];
 
   Future getWebsiteBasics() async {
     debugPrint("FUNKCJE WYKONANO");
@@ -48,42 +47,19 @@ class _MyHomePageState extends State<MyHomePage> {
     dom.Document html = dom.Document.html(response.body);
 
     final entireCard = html
-        .querySelectorAll("c-listing-fight__content-row")
-        .take(5)
-        .map((element) => element.attributes["src"])
+        .querySelectorAll("div > div.c-listing-fight__content-row")
+        .take(10)
+        .map((e) => e);
+
+    var imgs = entireCard
+        .map((e) => e
+            .querySelectorAll('img')
+            .map((a) => a.attributes['src']!.replaceAll(
+                '/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png',
+                'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png'))
+            .toList())
         .toList();
-
-    final redCornerAvatars = html
-        .querySelectorAll(
-            "div.c-listing-fight__corner-image--red > div.layout.layout--onecol > div > img")
-        .take(4)
-        .map((element) => element.attributes["src"])
-        .toList();
-
-    final blueCornerAvatars = html
-        .querySelectorAll(
-            "div.c-listing-fight__corner-image--blue > div.layout.layout--onecol > div > img")
-        .take(4)
-        .map((element) => element.attributes["src"])
-        .toList();
-
-    final fighterNames = html
-        .getElementsByClassName("c-listing-fight__names-row")
-        .take(8)
-        .map((e) => e.text.toUpperCase().trim())
-        .toList();
-
-    redCornerUrls = redCornerAvatars;
-    blueCornerUrls = blueCornerAvatars;
-    fightersNames = fighterNames;
-
-    // int i = 0;
-    // while (i < 8) {
-    //   fightersNames.add(fighterNames[i] + fighterNames[i + 1]);
-
-    //   i += 2;
-    // }
-    print(fightersNames);
+    imageUrls = imgs;
   }
 
   @override
@@ -121,13 +97,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          4,
+                          10,
                           (index) {
                             return MyCard(
                               cardId: index,
-                              redCornerImg: redCornerUrls[index]!,
-                              blueCornerImg: blueCornerUrls[index]!,
-                              fighterNames: fightersNames[index]!,
+                              urlString: imageUrls[index],
+                              // blueCornerImg: blueCornerUrls[index]!,
+                              // fighterNames: fightersNames[index]!,
                             );
                           },
                         ));
