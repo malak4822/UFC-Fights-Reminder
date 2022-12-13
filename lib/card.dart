@@ -45,16 +45,14 @@ class _CardState extends State<MyCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Image.network(widget.redCornerImg,
-                        height: 200, cacheHeight: 200),
+                    Image.network(widget.redCornerImg, height: 150),
                     Expanded(
                         child: Text(
                       style: GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                      widget.fighterNames.toString(),
+                      widget.fighterNames,
                       textAlign: TextAlign.center,
                     )),
-                    Image.network(widget.blueCornerImg,
-                        height: 200, cacheHeight: 200),
+                    Image.network(widget.blueCornerImg, height: 150),
                     Expanded(
                         child: Switch(
                       activeColor: const Color.fromARGB(255, 155, 10, 0),

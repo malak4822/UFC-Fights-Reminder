@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
@@ -45,34 +47,43 @@ class _MyHomePageState extends State<MyHomePage> {
         "https://www.ufc.com/event/ufc-fight-night-december-17-2022"));
     dom.Document html = dom.Document.html(response.body);
 
+    final entireCard = html
+        .querySelectorAll("c-listing-fight__content-row")
+        .take(5)
+        .map((element) => element.attributes["src"])
+        .toList();
+
     final redCornerAvatars = html
         .querySelectorAll(
             "div.c-listing-fight__corner-image--red > div.layout.layout--onecol > div > img")
-        .take(2)
+        .take(4)
         .map((element) => element.attributes["src"])
         .toList();
 
     final blueCornerAvatars = html
         .querySelectorAll(
             "div.c-listing-fight__corner-image--blue > div.layout.layout--onecol > div > img")
-        .take(2)
+        .take(4)
         .map((element) => element.attributes["src"])
         .toList();
 
     final fighterNames = html
-        .getElementsByClassName("c-listing-fight__corner-name")
+        .getElementsByClassName("c-listing-fight__names-row")
         .take(8)
-        .map((e) => e.text.trim())
+        .map((e) => e.text.toUpperCase().trim())
         .toList();
 
     redCornerUrls = redCornerAvatars;
     blueCornerUrls = blueCornerAvatars;
+    fightersNames = fighterNames;
 
-    int i = 0;
-    while (i < 8) {
-      fightersNames.add(fighterNames[i] + fighterNames[i + 1]);
-      i = i + 2;
-    }
+    // int i = 0;
+    // while (i < 8) {
+    //   fightersNames.add(fighterNames[i] + fighterNames[i + 1]);
+
+    //   i += 2;
+    // }
+    print(fightersNames);
   }
 
   @override
@@ -103,7 +114,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       return const CircularProgressIndicator(
                         backgroundColor: Colors.white,
                         color: Colors.black,
-                        strokeWidth: 3,
                       );
                     default:
                       if (snapshot.hasError) {
@@ -111,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       } else {
                         return Column(
                             children: List.generate(
-                          2,
+                          4,
                           (index) {
                             return MyCard(
                               cardId: index,
