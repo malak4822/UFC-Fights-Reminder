@@ -23,24 +23,14 @@ class _CardState extends State<MyCard> {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Visibility(
-          visible: isDialogShown,
-          child: FutureBuilder(
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-            return const AlertDialog(
-              title: Text("Ostrzenie"),
-              actions: [Text("Es")],
-              backgroundColor: Colors.green,
-            );
-          })),
       Card(
           elevation: 5,
           margin: const EdgeInsets.all(5),
           color: const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
-              padding: const EdgeInsets.only(top: 10, right: 10),
+              padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
               child: SizedBox(
-                  height: 120,
+                  height: 140,
                   child: Row(children: [
                     Image.network(
                       widget.urlString[0],
@@ -64,7 +54,7 @@ class _CardState extends State<MyCard> {
                       Text(
                         style:
                             GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                        '${widget.fighterNames[0]} VS ${widget.fighterNames[1]}',
+                        '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
                         textAlign: TextAlign.center,
                       ),
                     ])),

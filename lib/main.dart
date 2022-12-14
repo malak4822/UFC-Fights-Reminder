@@ -1,9 +1,11 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:shimmer/shimmer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,7 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final entireCard = html
         .querySelectorAll("div > div.c-listing-fight__content-row")
-        .take(10)
         .toList();
 
     final fighterNames = entireCard
@@ -69,8 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList())
         .toList();
     imageUrls = imgs;
-
-    log(fighterNames.toString());
   }
 
   @override
@@ -98,23 +97,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
-                      return const CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                        color: Colors.black,
-                      );
+                      return Column(children: [
+                        loadingCard(),
+                        loadingCard(),
+                        loadingCard(),
+                        loadingCard(),
+                        loadingCard(),
+                      ]);
                     default:
                       if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
                         return Column(
                             children: List.generate(
-                          10,
+                          5,
                           (index) {
-                            return MyCard(
-                              cardId: index,
-                              urlString: imageUrls[index],
-                              fighterNames: fightersNames[index],
-                            );
+                            return Column(children: [
+                              MyCard(
+                                  cardId: index,
+                                  fighterNames: fightersNames[index],
+                                  urlString: imageUrls[index]),
+                            ]);
                           },
                         ));
                       }
@@ -126,3 +129,34 @@ class _MyHomePageState extends State<MyHomePage> {
         ])));
   }
 }
+
+Widget loadingCard() => Padding(
+    padding: const EdgeInsets.all(5),
+    child: Container(
+      height: 140,
+      color: const Color.fromRGBO(32, 32, 32, 1),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Image.asset('assets/fighterimg.png',
+              color: const Color.fromARGB(255, 69, 69, 69), cacheWidth: 140),
+          Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+            texty(100),
+            texty(40),
+            texty(100),
+          ]),
+          Image.asset('assets/fighterimg.png',
+              color: const Color.fromARGB(255, 69, 69, 69), cacheWidth: 140),
+        ],
+      ),
+    ));
+
+Widget texty(double width) => Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 69, 69, 69),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      height: 20,
+      width: width,
+    );
