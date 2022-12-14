@@ -34,6 +34,20 @@ class _CardState extends State<MyCard> {
                   child: Row(children: [
                     Image.network(
                       widget.urlString[0],
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
                       alignment: Alignment.topCenter,
                       fit: BoxFit.cover,
                       width: 120,
@@ -60,6 +74,20 @@ class _CardState extends State<MyCard> {
                     ])),
                     Image.network(
                       widget.urlString[1],
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
                       alignment: Alignment.topCenter,
                       fit: BoxFit.cover,
                       width: 120,

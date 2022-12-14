@@ -89,44 +89,32 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: ListView(children: [
-          Column(
-            children: [
-              FutureBuilder(
-                future: getWebsiteBasics(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return Column(children: [
-                        loadingCard(),
-                        loadingCard(),
-                        loadingCard(),
-                        loadingCard(),
-                        loadingCard(),
-                      ]);
-                    default:
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return Column(
-                            children: List.generate(
-                          5,
-                          (index) {
-                            return Column(children: [
-                              MyCard(
-                                  cardId: index,
-                                  fighterNames: fightersNames[index],
-                                  urlString: imageUrls[index]),
-                            ]);
-                          },
-                        ));
-                      }
-                  }
-                },
-              ),
-            ],
-          )
-        ])));
+            child: ListView(
+                children: List.generate(
+                    14,
+                    (index) => FutureBuilder(
+                        future: getWebsiteBasics(),
+                        builder: ((context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Column(
+                                children:
+                                    List.generate(5, (index) => loadingCard()));
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasError) {
+                              return const Text('Error');
+                            } else {
+                              return MyCard(
+                                cardId: index,
+                                fighterNames: fightersNames[index],
+                                urlString: imageUrls[index],
+                              );
+                            }
+                          } else {
+                            return Text('State: ${snapshot.connectionState}');
+                          }
+                        }))))));
   }
 }
 
