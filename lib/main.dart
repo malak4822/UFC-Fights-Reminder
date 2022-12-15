@@ -1,11 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-import 'package:shimmer/shimmer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,6 +37,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
+
+  @override
+  void initState() {
+    getWebsiteBasics();
+    super.initState();
+  }
 
   Future getWebsiteBasics() async {
     debugPrint("FUNKCJE WYKONANO");
@@ -89,32 +91,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: ListView(
-                children: List.generate(
-                    14,
-                    (index) => FutureBuilder(
-                        future: getWebsiteBasics(),
-                        builder: ((context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Column(
-                                children:
-                                    List.generate(5, (index) => loadingCard()));
-                          } else if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            if (snapshot.hasError) {
-                              return const Text('Error');
-                            } else {
-                              return MyCard(
-                                cardId: index,
-                                fighterNames: fightersNames[index],
-                                urlString: imageUrls[index],
-                              );
-                            }
-                          } else {
-                            return Text('State: ${snapshot.connectionState}');
-                          }
-                        }))))));
+            child: FutureBuilder(
+                future: getWebsiteBasics(),
+                builder: ((context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return ListView(children: [
+                      loadingCard(),
+                      loadingCard(),
+                      loadingCard(),
+                      loadingCard(),
+                      loadingCard(),
+                    ]);
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Text('Error');
+                    } else {
+                      return ListView(
+                        children: List.generate(
+                            14,
+                            (index) => MyCard(
+                                  cardId: index,
+                                  fighterNames: fightersNames[index],
+                                  urlString: imageUrls[index],
+                                )),
+                      );
+                    }
+                  } else {
+                    return Text('State: ${snapshot.connectionState}');
+                  }
+                }))));
   }
 }
 

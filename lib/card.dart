@@ -39,19 +39,12 @@ class _CardState extends State<MyCard> {
                         if (loadingProgress == null) {
                           return child;
                         }
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
+                        return const CircularProgressIndicator();
                       },
                       alignment: Alignment.topCenter,
                       fit: BoxFit.cover,
                       width: 120,
-                      cacheWidth: (60 * MediaQuery.of(context).devicePixelRatio)
+                      cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio)
                           .round(),
                     ),
                     Expanded(
@@ -79,14 +72,7 @@ class _CardState extends State<MyCard> {
                         if (loadingProgress == null) {
                           return child;
                         }
-                        return Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
+                        return const CircularProgressIndicator();
                       },
                       alignment: Alignment.topCenter,
                       fit: BoxFit.cover,
