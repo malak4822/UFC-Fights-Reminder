@@ -5,18 +5,19 @@ class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
     required this.cardId,
-    required this.urlString,
     required this.fighterNames,
+    required this.fighterUnoUrl,
+    required this.fighterDuoUrl,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
-  final List<String> urlString;
   final List<String> fighterNames;
+  final String fighterUnoUrl;
+  final String fighterDuoUrl;
 }
 
-bool isDialogShown = false;
 bool shouldRemind = false;
 
 class _CardState extends State<MyCard> {
@@ -33,7 +34,7 @@ class _CardState extends State<MyCard> {
                   height: 140,
                   child: Row(children: [
                     Image.network(
-                      widget.urlString[0],
+                      widget.fighterUnoUrl,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {
@@ -66,7 +67,7 @@ class _CardState extends State<MyCard> {
                       ),
                     ])),
                     Image.network(
-                      widget.urlString[1],
+                      widget.fighterDuoUrl,
                       loadingBuilder: (BuildContext context, Widget child,
                           ImageChunkEvent? loadingProgress) {
                         if (loadingProgress == null) {

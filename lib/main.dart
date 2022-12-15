@@ -38,12 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
 
-  @override
-  void initState() {
-    getWebsiteBasics();
-    super.initState();
-  }
-
   Future getWebsiteBasics() async {
     debugPrint("FUNKCJE WYKONANO");
     final response = await http.get(Uri.parse(
@@ -112,7 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             (index) => MyCard(
                                   cardId: index,
                                   fighterNames: fightersNames[index],
-                                  urlString: imageUrls[index],
+                                  fighterUnoUrl: imageUrls[index][0],
+                                  fighterDuoUrl: imageUrls[index][1],
                                 )),
                       );
                     }
