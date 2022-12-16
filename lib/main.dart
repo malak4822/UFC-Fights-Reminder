@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     } else {
                       return ListView(
                         children: List.generate(
-                            14,
+                            12,
                             (index) => MyCard(
                                   cardId: index,
                                   fighterNames: fightersNames[index],

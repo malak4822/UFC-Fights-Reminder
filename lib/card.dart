@@ -27,7 +27,9 @@ class _CardState extends State<MyCard> {
       Card(
           elevation: 5,
           margin: const EdgeInsets.all(5),
-          color: const Color.fromRGBO(32, 32, 32, 1),
+          color: shouldRemind
+              ? const Color.fromARGB(255, 135, 0, 0)
+              : const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
               padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
               child: SizedBox(
