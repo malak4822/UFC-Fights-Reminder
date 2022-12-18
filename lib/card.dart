@@ -6,61 +6,55 @@ class MyCard extends StatefulWidget {
     super.key,
     required this.cardId,
     required this.fighterNames,
-    required this.fighterUnoUrl,
-    required this.fighterDuoUrl,
+    required this.fightersUrl,
+    required this.shouldRemindList,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
   final List<String> fighterNames;
-  final String fighterUnoUrl;
-  final String fighterDuoUrl;
+  final List<String> fightersUrl;
+  final List<int> shouldRemindList;
 }
 
-bool shouldRemind = false;
-
 class _CardState extends State<MyCard> {
+  bool boolReminder = false;
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Card(
-          elevation: 5,
-          margin: const EdgeInsets.all(5),
-          color: shouldRemind
-              ? const Color.fromARGB(255, 135, 0, 0)
-              : const Color.fromRGBO(32, 32, 32, 1),
-          child: Padding(
-              padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
-              child: SizedBox(
-                  height: 140,
-                  child: Row(children: [
-                    Image.network(
-                      widget.fighterUnoUrl,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return const CircularProgressIndicator();
-                      },
-                      alignment: Alignment.topCenter,
-                      fit: BoxFit.cover,
-                      width: 120,
-                      cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio)
-                          .round(),
-                    ),
+        elevation: 5,
+        margin: const EdgeInsets.all(5),
+        color: boolReminder
+            ? const Color.fromARGB(255, 135, 0, 0)
+            : const Color.fromRGBO(32, 32, 32, 1),
+        child: Padding(
+            padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
+            child: SizedBox(
+                height: 140,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    fighterPhoto(0),
                     Expanded(
                         child: Column(children: [
                       Switch(
-                        activeColor: const Color.fromARGB(255, 155, 10, 0),
-                        onChanged: (isOn) {
-                          setState(() {
-                            shouldRemind = isOn;
-                          });
-                        },
-                        value: shouldRemind,
-                      ),
+                          activeColor: const Color.fromARGB(255, 255, 255, 255),
+                          onChanged: (isOn) {
+                            if (isOn) {
+                              widget.shouldRemindList.add(widget.cardId);
+                            } else {
+                              widget.shouldRemindList.remove(widget.cardId);
+                            }
+                            print(widget.shouldRemindList);
+                            setState(() {
+                              boolReminder = isOn;
+                            });
+                          },
+                          value: boolReminder),
                       Text(
                         style:
                             GoogleFonts.overpass(fontWeight: FontWeight.bold),
@@ -68,22 +62,37 @@ class _CardState extends State<MyCard> {
                         textAlign: TextAlign.center,
                       ),
                     ])),
-                    Image.network(
-                      widget.fighterDuoUrl,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        }
-                        return const CircularProgressIndicator();
-                      },
-                      alignment: Alignment.topCenter,
-                      fit: BoxFit.cover,
-                      width: 120,
-                      cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio)
-                          .round(),
-                    ),
-                  ]))))
+                    fighterPhoto(1)
+                  ],
+                ))),
+      )
     ]);
   }
+
+  Widget fighterPhoto(int intFighter) => Image.network(
+        widget.fightersUrl[intFighter],
+        alignment: Alignment.topCenter,
+        fit: BoxFit.cover,
+        width: MediaQuery.of(context).size.width / 3,
+        cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio).round(),
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          } else {
+            return Image.asset('assets/fighterimg.png',
+                color: const Color.fromARGB(255, 69, 69, 69),
+                cacheWidth: MediaQuery.of(context).size.width ~/ 3);
+          }
+        },
+      );
 }
+
+Widget texty(double width) => Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 69, 69, 69),
+        borderRadius: BorderRadius.circular(5),
+      ),
+      height: 20,
+      width: width,
+    );
