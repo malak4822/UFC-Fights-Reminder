@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,6 +40,20 @@ List<int> indexRemindList = [];
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
+
+  @override
+  void initState() {
+    savingData();
+    super.initState();
+  }
+
+  void savingData() async {
+    List<String> stringIndexList =
+        indexRemindList.map((e) => e.toString()).toList();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('remindList', stringIndexList);
+  }
 
   Future getWebsiteBasics() async {
     final response = await http.get(Uri.parse(
@@ -95,15 +110,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasError) {
                       return const Text('Error');
                     } else {
-                      return ListView(
-                        children: List.generate(
-                            12,
-                            (index) => MyCard(
-                                  cardId: index,
-                                  shouldRemindList: indexRemindList,
-                                  fighterNames: fightersNames[index],
-                                  fightersUrl: imageUrls[index],
-                                )),
+                      return Column(
+                        children: [
+                          ElevatedButton(
+                              onPressed: () {
+                                savingData();
+                              },
+                              //STWORZYĆ PREFERENCESDATA
+                              child: const Text("essa")),
+                          Column(
+                            children: List.generate(
+                                4,
+                                (index) => MyCard(
+                                      cardId: index,
+                                      shouldRemindList: indexRemindList,
+                                      fighterNames: fightersNames[index],
+                                      fightersUrl: imageUrls[index],
+                                    )),
+                          )
+                        ],
                       );
                     }
                   } else {
