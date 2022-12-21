@@ -35,24 +35,13 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-List<int> indexRemindList = [];
-
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
 
   @override
   void initState() {
-    savingData();
     super.initState();
-  }
-
-  void savingData() async {
-    List<String> stringIndexList =
-        indexRemindList.map((e) => e.toString()).toList();
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('remindList', stringIndexList);
   }
 
   Future getWebsiteBasics() async {
@@ -111,24 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       return const Text('Error');
                     } else {
                       return Column(
-                        children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                savingData();
-                              },
-                              //STWORZYĆ PREFERENCESDATA
-                              child: const Text("essa")),
-                          Column(
-                            children: List.generate(
-                                4,
-                                (index) => MyCard(
-                                      cardId: index,
-                                      shouldRemindList: indexRemindList,
-                                      fighterNames: fightersNames[index],
-                                      fightersUrl: imageUrls[index],
-                                    )),
-                          )
-                        ],
+                        children: List.generate(
+                            4,
+                            (index) => MyCard(
+                                  cardId: index,
+                                  fighterNames: fightersNames[index],
+                                  fightersUrl: imageUrls[index],
+                                )),
                       );
                     }
                   } else {

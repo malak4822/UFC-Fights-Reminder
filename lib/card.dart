@@ -8,7 +8,6 @@ class MyCard extends StatefulWidget {
     required this.cardId,
     required this.fighterNames,
     required this.fightersUrl,
-    required this.shouldRemindList,
   });
 
   @override
@@ -16,11 +15,28 @@ class MyCard extends StatefulWidget {
   final int cardId;
   final List<String> fighterNames;
   final List<String> fightersUrl;
-  final List<int> shouldRemindList;
 }
 
+SharedPreferences prefs = SharedPreferences.getInstance();
+
 class _CardState extends State<MyCard> {
-  bool boolReminder = false;
+  bool shouldRemind = false;
+
+  loadData() async {
+    setState(() {
+      shouldRemind = prefs.getBool('boolKey') ?? true;
+    });
+  }
+
+  @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
+
+  saveBool() async {
+    await prefs.setBool('boolKey', shouldRemind);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +44,7 @@ class _CardState extends State<MyCard> {
       Card(
         elevation: 5,
         margin: const EdgeInsets.all(5),
-        color: boolReminder
+        color: shouldRemind
             ? const Color.fromARGB(255, 135, 0, 0)
             : const Color.fromRGBO(32, 32, 32, 1),
         child: Padding(
@@ -45,17 +61,14 @@ class _CardState extends State<MyCard> {
                       Switch(
                           activeColor: const Color.fromARGB(255, 255, 255, 255),
                           onChanged: (isOn) {
-                            if (isOn) {
-                              widget.shouldRemindList.add(widget.cardId);
-                            } else {
-                              widget.shouldRemindList.remove(widget.cardId);
-                            }
-                            print(widget.shouldRemindList);
                             setState(() {
-                              boolReminder = isOn;
+                              shouldRemind = isOn;
                             });
+                            saveBool();
+
+                            print("${widget.cardId} : $shouldRemind");
                           },
-                          value: boolReminder),
+                          value: shouldRemind),
                       Text(
                         style:
                             GoogleFonts.overpass(fontWeight: FontWeight.bold),
