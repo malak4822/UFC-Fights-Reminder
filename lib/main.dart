@@ -39,7 +39,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> imageUrls = [];
 
   Future getWebsiteBasics() async {
-    debugPrint("FUNKCJE WYKONANO");
     final response = await http.get(Uri.parse(
         "https://www.ufc.com/event/ufc-fight-night-december-17-2022"));
     dom.Document html = dom.Document.html(response.body);
@@ -60,13 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
     final imgs = entireCard
         .map((e) => e
             .querySelectorAll('img')
-            .map((a) => a.attributes['src']!.replaceAll(
-                '/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png',
-                'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png'))
+            .map((a) => a.attributes['src']!
+                .replaceAll(
+                    '/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png',
+                    'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png')
+                .replaceAll('/n', ' '))
             .toList())
         .toList();
     imageUrls = imgs;
   }
+
+  List<int> remindIndexList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -89,26 +92,31 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return ListView(children: [
-                      loadingCard(),
-                      loadingCard(),
-                      loadingCard(),
-                      loadingCard(),
-                      loadingCard(),
-                    ]);
+                    return const SizedBox();
                   } else if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
-                      return const Text('Error');
+                      return const Text('Internet Connection Error');
                     } else {
-                      return ListView(
-                        children: List.generate(
-                            12,
-                            (index) => MyCard(
-                                  cardId: index,
-                                  fighterNames: fightersNames[index],
-                                  fighterUnoUrl: imageUrls[index][0],
-                                  fighterDuoUrl: imageUrls[index][1],
-                                )),
+                      return ListView.builder(
+                        itemCount: 12,
+                        prototypeItem: ListTile(
+                          title: MyCard(
+                            cardId: 0,
+                            fighterNames: fightersNames.first,
+                            fightersUrl: imageUrls.first,
+                          ),
+                        ),
+                        itemBuilder: (BuildContext context, index) {
+                          return ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            title: MyCard(
+                              cardId: index,
+                              fighterNames: fightersNames[index],
+                              fightersUrl: imageUrls[index],
+                            ),
+                          );
+                        },
                       );
                     }
                   } else {
@@ -117,34 +125,3 @@ class _MyHomePageState extends State<MyHomePage> {
                 }))));
   }
 }
-
-Widget loadingCard() => Padding(
-    padding: const EdgeInsets.all(5),
-    child: Container(
-      height: 140,
-      color: const Color.fromRGBO(32, 32, 32, 1),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Image.asset('assets/fighterimg.png',
-              color: const Color.fromARGB(255, 69, 69, 69), cacheWidth: 140),
-          Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-            texty(100),
-            texty(40),
-            texty(100),
-          ]),
-          Image.asset('assets/fighterimg.png',
-              color: const Color.fromARGB(255, 69, 69, 69), cacheWidth: 140),
-        ],
-      ),
-    ));
-
-Widget texty(double width) => Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 69, 69, 69),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      height: 20,
-      width: width,
-    );
