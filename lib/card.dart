@@ -1,87 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
     required this.cardId,
-    required this.fighterName,
-    required this.photoUrls,
+    required this.fighterNames,
+    required this.fightersUrl,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
-  final String fighterName;
-  final List<String> photoUrls;
+  final List<String> fighterNames;
+  final List<String> fightersUrl;
 }
 
-bool isDialogShown = false;
-bool shouldRemind = false;
-
 class _CardState extends State<MyCard> {
-  Future getFightInfo() async {
-    print("FIGHT INFO");
-  }
-
-  void showDialog() {
-    setState(() {
-      if (isDialogShown) {
-        isDialogShown = false;
-      } else {
-        isDialogShown = true;
-      }
-    });
-  }
-
+  bool shouldRemind = false;
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Visibility(
-          visible: isDialogShown,
-          child: FutureBuilder(
-              future: getFightInfo().then((value) => value),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                return const AlertDialog(
-                  title: Text("Ostrzenie"),
-                  actions: [Text("Es")],
-                  backgroundColor: Colors.green,
-                );
-              })),
-      GestureDetector(
-          onDoubleTap: showDialog,
-          child: Card(
-              elevation: 5,
-              margin: const EdgeInsets.all(5),
-              color: const Color.fromRGBO(32, 32, 32, 1),
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 10, right: 10),
+    void changeColors() {
+      setState(() {
+        if (shouldRemind == false) {
+          shouldRemind = true;
+        } else {
+          shouldRemind = false;
+        }
+      });
+    }
+
+    return GestureDetector(
+        onTap: () => changeColors(),
+        child: Card(
+          elevation: 10,
+          margin: const EdgeInsets.all(2),
+          color: shouldRemind
+              ? const Color.fromARGB(255, 108, 0, 0)
+              : const Color.fromRGBO(32, 32, 32, 1),
+          child: Padding(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+              child: SizedBox(
+                  height: 200,
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Image.network(widget.photoUrls[0],
-                            height: 90, cacheHeight: 90),
-                        Expanded(
-                            child: Text(
-                          style:
-                              GoogleFonts.overpass(fontWeight: FontWeight.bold),
-                          widget.fighterName.toString(),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: fighterPhoto(0)),
+                      Expanded(
+                          child: Column(children: [
+                        const SizedBox(height: 10),
+                        const Icon(Icons.alarm, color: Colors.white, size: 38),
+                        const SizedBox(height: 14),
+                        Text(
+                          style: GoogleFonts.overpass(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
                           textAlign: TextAlign.center,
-                        )),
-                        Image.network(widget.photoUrls[1],
-                            height: 90, cacheHeight: 90),
-                        Expanded(
-                            child: Switch(
-                          activeColor: const Color.fromARGB(255, 155, 10, 0),
-                          onChanged: (isOn) {
-                            setState(() {
-                              shouldRemind = isOn;
-                            });
-                          },
-                          value: shouldRemind,
-                        ))
-                      ]))))
-    ]);
+                        ),
+                        const Spacer()
+                      ])),
+                      Expanded(child: fighterPhoto(1)),
+                    ],
+                  ))),
+        ));
   }
+
+  Widget fighterPhoto(int intFighter) => Image.network(
+        widget.fightersUrl[intFighter],
+        alignment: Alignment.topCenter,
+        fit: BoxFit.cover,
+        cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio).round(),
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          } else {
+            return Image.asset('assets/fighterimg.png',
+                color: const Color.fromARGB(255, 69, 69, 69),
+                cacheWidth: MediaQuery.of(context).size.width ~/ 3);
+          }
+        },
+      );
 }

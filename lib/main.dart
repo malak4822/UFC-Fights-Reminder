@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -36,56 +35,41 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-  // var cardId = List<int>.generate(4, (index) => index);
-
-  List<String> fightersNames = [];
-  List<String> avatarUrl = [];
+  List<List<String>> fightersNames = [];
+  List<List<String>> imageUrls = [];
 
   Future getWebsiteBasics() async {
-    print("FUNKCJE WYKONANO");
-    final response = await http
-        .get(Uri.parse("https://www.ufc.com/events#events-list-upcoming"));
+    final response = await http.get(Uri.parse(
+        "https://www.ufc.com/event/ufc-fight-night-december-17-2022"));
     dom.Document html = dom.Document.html(response.body);
 
-    final response1 = await http.get(Uri.parse(
-        "https://www.ufc.com/event/ufc-fight-night-december-03-2022"));
-    dom.Document html1 = dom.Document.html(response1.body);
-
-// TRZEBA DODAWAĆ PO 2 BO ZBIERA PO JEDNYM ZDJĘCIU
-    final fightAvatar = html
-        .getElementsByClassName("image-style-event-results-athlete-headshot")
-        .take(12)
-        .map((element) => element.attributes['src'].toString())
+    final entireCard = html
+        .querySelectorAll("div > div.c-listing-fight__content-row")
         .toList();
 
-    String doublingAvatars = "";
-    int i = 0;
-    while (i < 12) {
-      doublingAvatars = "${fightAvatar[i]} ${fightAvatar[i + 1]}";
-      avatarUrl.add(doublingAvatars);
-      i += 2;
-    }
-// TRZEBA BRAĆ PO 4 BO ZBIERA PO IMIENIU A POTEM NAZWISKU
-    final fighterName = html1
-        .querySelectorAll("div.c-listing-fight__corner-name > span")
-        .take(24)
-        .map((e) => e.innerHtml)
+    final fighterNames = entireCard
+        .map((e) => e
+            .getElementsByClassName('c-listing-fight__corner-name')
+            .map(
+                (e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
+            .toList())
         .toList();
+    fightersNames = fighterNames;
 
-    int a = 0;
-    String names = "";
-    while (a < 24) {
-      names = "${fighterName[a + 1]} VS ${fighterName[a + 3]}";
-      fightersNames.add(names);
-      a = a + 4;
-    }
-    print(fightersNames);
-    print(avatarUrl);
+    final imgs = entireCard
+        .map((e) => e
+            .querySelectorAll('img')
+            .map((a) => a.attributes['src']!
+                .replaceAll(
+                    '/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png',
+                    'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png')
+                .replaceAll('/n', ' '))
+            .toList())
+        .toList();
+    imageUrls = imgs;
   }
+
+  List<int> remindIndexList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -104,44 +88,40 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: ListView(children: [
-          const SizedBox(height: 20),
-          Column(
-            children: [
-              Text(
-                  style: GoogleFonts.overpass(
-                      fontWeight: FontWeight.bold, fontSize: 22),
-                  "Niedziela, grudzień 4 / 1:00 AM CET"),
-              FutureBuilder(
-                future: getWebsiteBasics().then((value) => value),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return const CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                        color: Colors.black,
-                      );
-                    default:
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return Column(
-                            children: List.generate(
-                          6,
-                          (index) {
-                            return MyCard(
+            child: FutureBuilder(
+                future: getWebsiteBasics(),
+                builder: ((context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasError) {
+                      return const Text('Internet Connection Error');
+                    } else {
+                      return ListView.builder(
+                        itemCount: 12,
+                        prototypeItem: ListTile(
+                          title: MyCard(
+                            cardId: 0,
+                            fighterNames: fightersNames.first,
+                            fightersUrl: imageUrls.first,
+                          ),
+                        ),
+                        itemBuilder: (BuildContext context, index) {
+                          return ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            title: MyCard(
                               cardId: index,
-                              fighterName: fightersNames[index],
-                              photoUrls: avatarUrl[index].split(' '),
-                            );
-                          },
-                        ));
-                      }
+                              fighterNames: fightersNames[index],
+                              fightersUrl: imageUrls[index],
+                            ),
+                          );
+                        },
+                      );
+                    }
+                  } else {
+                    return Text('State: ${snapshot.connectionState}');
                   }
-                },
-              ),
-            ],
-          )
-        ])));
+                }))));
   }
 }
