@@ -19,18 +19,19 @@ class MyCard extends StatefulWidget {
 
 class _CardState extends State<MyCard> {
   bool shouldRemind = false;
+
+  void changeColors() {
+    setState(() {
+      if (shouldRemind == false) {
+        shouldRemind = true;
+      } else {
+        shouldRemind = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    void changeColors() {
-      setState(() {
-        if (shouldRemind == false) {
-          shouldRemind = true;
-        } else {
-          shouldRemind = false;
-        }
-      });
-    }
-
     return GestureDetector(
         onTap: () => changeColors(),
         child: Card(
@@ -42,7 +43,7 @@ class _CardState extends State<MyCard> {
           child: Padding(
               padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
               child: SizedBox(
-                  height: 200,
+                  height: 180,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

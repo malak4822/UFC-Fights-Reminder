@@ -37,15 +37,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
+  late int foundCards;
 
   Future getWebsiteBasics() async {
-    final response = await http.get(Uri.parse(
-        "https://www.ufc.com/event/ufc-fight-night-december-17-2022"));
+    final response =
+        await http.get(Uri.parse("https://www.ufc.com/event/ufc-283"));
     dom.Document html = dom.Document.html(response.body);
 
     final entireCard = html
         .querySelectorAll("div > div.c-listing-fight__content-row")
         .toList();
+    foundCards = entireCard.length;
 
     final fighterNames = entireCard
         .map((e) => e
@@ -98,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return const Text('Internet Connection Error');
                     } else {
                       return ListView.builder(
-                        itemCount: 12,
+                        itemCount: foundCards,
                         prototypeItem: ListTile(
                           title: MyCard(
                             cardId: 0,
