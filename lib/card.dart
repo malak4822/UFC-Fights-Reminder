@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({
@@ -20,6 +20,10 @@ class MyCard extends StatefulWidget {
 class _CardState extends State<MyCard> {
   bool shouldRemind = false;
 
+  void wakeUp() {
+    print("ODPALA SIĘ ALARM NA KARCE NR : ${widget.cardId}");
+  }
+
   void changeColors() {
     setState(() {
       if (shouldRemind == false) {
@@ -28,6 +32,12 @@ class _CardState extends State<MyCard> {
         shouldRemind = false;
       }
     });
+    if (shouldRemind) {
+      AndroidAlarmManager.oneShot(
+          const Duration(seconds: 3), widget.cardId, wakeUp);
+    } else {
+      AndroidAlarmManager.cancel(widget.cardId);
+    }
   }
 
   @override
