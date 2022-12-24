@@ -2,6 +2,7 @@ import 'package:fighterwaker/card.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,6 +38,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Future getWebsiteBasics() async {
     final response = await http.get(Uri.parse(
@@ -97,26 +103,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasError) {
                       return const Text('Internet Connection Error');
                     } else {
-                      return ListView.builder(
-                        itemCount: 12,
-                        prototypeItem: ListTile(
-                          title: MyCard(
-                            cardId: 0,
-                            fighterNames: fightersNames.first,
-                            fightersUrl: imageUrls.first,
-                          ),
-                        ),
-                        itemBuilder: (BuildContext context, index) {
-                          return ListTile(
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 5),
-                            title: MyCard(
-                              cardId: index,
-                              fighterNames: fightersNames[index],
-                              fightersUrl: imageUrls[index],
-                            ),
-                          );
-                        },
+                      return ListView(
+                        children: List.generate(
+                            12,
+                            (index) => MyCard(
+                                  cardId: index,
+                                  fighterNames: fightersNames[index],
+                                  fightersUrl: imageUrls[index],
+                                )),
                       );
                     }
                   } else {
