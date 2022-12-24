@@ -50,7 +50,8 @@ class _CardState extends State<MyCard> {
                       Expanded(
                           child: Column(children: [
                         const SizedBox(height: 10),
-                        const Icon(Icons.alarm, color: Colors.white, size: 38),
+                        Icon(Icons.alarm,
+                            color: Colors.white, size: shouldRemind ? 52 : 38),
                         const SizedBox(height: 14),
                         Text(
                           style: GoogleFonts.overpass(
@@ -76,9 +77,14 @@ class _CardState extends State<MyCard> {
           if (loadingProgress == null) {
             return child;
           } else {
-            return Image.asset('assets/fighterimg.png',
-                color: const Color.fromARGB(255, 69, 69, 69),
-                cacheWidth: MediaQuery.of(context).size.width ~/ 3);
+            return Image.asset(
+              'assets/fighterImg.png',
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter,
+              color: const Color.fromARGB(255, 69, 69, 69),
+              cacheWidth:
+                  (60 * MediaQuery.of(context).devicePixelRatio).round(),
+            );
           }
         },
       );

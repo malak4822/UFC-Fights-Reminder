@@ -1,5 +1,5 @@
+import 'package:fighterwaker/card.dart';
 import 'package:flutter/material.dart';
-import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 
