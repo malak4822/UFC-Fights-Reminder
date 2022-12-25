@@ -21,10 +21,12 @@ class _CardState extends State<MyCard> {
   bool shouldRemind = false;
 
   void wakeUp() {
-    print("ODPALA SIĘ ALARM NA KARCE NR : ${widget.cardId}");
+    print(
+        "ODPALA SIĘ ALARM NA KARCE NR : ${widget.cardId} O GODZINIE : ${DateTime.now()}");
   }
 
   void changeColors() {
+    AndroidAlarmManager.initialize();
     setState(() {
       if (shouldRemind == false) {
         shouldRemind = true;
@@ -32,12 +34,8 @@ class _CardState extends State<MyCard> {
         shouldRemind = false;
       }
     });
-    if (shouldRemind) {
-      AndroidAlarmManager.oneShot(
-          const Duration(seconds: 3), widget.cardId, wakeUp);
-    } else {
-      AndroidAlarmManager.cancel(widget.cardId);
-    }
+    AndroidAlarmManager.oneShot(
+        const Duration(seconds: 1), widget.cardId, wakeUp);
   }
 
   @override

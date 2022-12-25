@@ -96,7 +96,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox();
+                    return ListView.builder(
+                      itemCount: 5,
+                      itemBuilder: (BuildContext context, index) {
+                        return ListTile(
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            title: loadingCard());
+                      },
+                    );
                   } else if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       return const Text('Internet Connection Error');
@@ -128,4 +136,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 }))));
   }
+
+  Widget loadingCard() => const Card(
+        elevation: 10,
+        color: Color.fromRGBO(32, 32, 32, 1),
+        child:
+            Padding(padding: EdgeInsets.only(), child: SizedBox(height: 180)),
+      );
 }
