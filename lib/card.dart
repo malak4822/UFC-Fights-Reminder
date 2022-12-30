@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({
@@ -20,13 +21,7 @@ class MyCard extends StatefulWidget {
 class _CardState extends State<MyCard> {
   bool shouldRemind = false;
 
-  void wakeUp() {
-    print(
-        "ODPALA SIĘ ALARM NA KARCE NR : ${widget.cardId} O GODZINIE : ${DateTime.now()}");
-  }
-
   void changeColors() {
-    AndroidAlarmManager.initialize();
     setState(() {
       if (shouldRemind == false) {
         shouldRemind = true;
@@ -34,8 +29,28 @@ class _CardState extends State<MyCard> {
         shouldRemind = false;
       }
     });
-    AndroidAlarmManager.oneShot(
-        const Duration(seconds: 1), widget.cardId, wakeUp);
+  }
+
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  late Future<int> _counter;
+
+  @override
+  void initState() {
+    super.initState();
+    _counter = _prefs.then((SharedPreferences prefs) {
+      return prefs.getInt('counter') ?? 0;
+    });
+  }
+
+  Future<void> _incrementCounter() async {
+    final SharedPreferences prefs = await _prefs;
+    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+
+    setState(() {
+      _counter = prefs.setInt('counter', counter).then((bool success) {
+        return counter;
+      });
+    });
   }
 
   @override
@@ -55,22 +70,46 @@ class _CardState extends State<MyCard> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: fighterPhoto(0)),
-                      Expanded(
-                          child: Column(children: [
-                        const SizedBox(height: 10),
-                        Icon(Icons.alarm,
-                            color: Colors.white, size: shouldRemind ? 52 : 38),
-                        const SizedBox(height: 14),
-                        Text(
-                          style: GoogleFonts.overpass(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
-                          textAlign: TextAlign.center,
-                        ),
-                        const Spacer()
-                      ])),
-                      Expanded(child: fighterPhoto(1)),
+                      // Expanded(child: fighterPhoto(0)),
+                      // Expanded(
+                      //     child: Column(children: [
+                      //   const SizedBox(height: 10),
+                      //   Icon(Icons.alarm,
+                      //       color: Colors.white, size: shouldRemind ? 52 : 38),
+                      //   const SizedBox(height: 14),
+                      //   Text(
+                      //     style: GoogleFonts.overpass(
+                      //         fontSize: 16, fontWeight: FontWeight.bold),
+                      //     '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
+                      //     textAlign: TextAlign.center,
+                      //   ),
+                      //   const Spacer()
+                      // ])),
+                      // Expanded(child: fighterPhoto(1)),
+                      ElevatedButton.icon(
+                          onPressed: () => _incrementCounter(),
+                          icon: const Icon(Icons.alarm),
+                          label: const Text("dodaj")),
+                      FutureBuilder(
+                          future: _counter,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<int> snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.waiting:
+                                return const CircularProgressIndicator();
+                              default:
+                                if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  print(snapshot);
+
+                                  return Text(
+                                    'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
+                                    'This should persist across restarts.',
+                                  );
+                                }
+                            }
+                          })
                     ],
                   ))),
         ));

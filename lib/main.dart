@@ -41,6 +41,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> imageUrls = [];
   late int foundCards;
 
+  essa() {
+    Future<String> wartoscpoczasie =
+        Future.delayed(const Duration(seconds: 6), () {
+      return "tekst wyświetalajca cy sie po 6 sekunedach";
+    });
+  }
+
   Future getWebsiteBasics() async {
     final response =
         await http.get(Uri.parse("https://www.ufc.com/event/ufc-283"));
