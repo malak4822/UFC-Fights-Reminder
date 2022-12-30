@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
@@ -19,50 +17,45 @@ class MyCard extends StatefulWidget {
 }
 
 class _CardState extends State<MyCard> {
-  bool shouldRemind = false;
-
-  void changeColors() {
-    setState(() {
-      if (shouldRemind == false) {
-        shouldRemind = true;
-      } else {
-        shouldRemind = false;
-      }
-    });
-  }
-
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Future<int> _counter;
+  late Future<bool> shouldRemind;
 
   @override
   void initState() {
     super.initState();
-    _counter = _prefs.then((SharedPreferences prefs) {
-      return prefs.getInt('counter') ?? 0;
+    shouldRemind = _prefs.then((SharedPreferences prefs) {
+      return prefs.getBool('boolSwitcherKey') ?? false;
     });
   }
 
-  Future<void> _incrementCounter() async {
+  Future<void> changeAndSafeBool() async {
     final SharedPreferences prefs = await _prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final bool counter = (prefs.getBool('boolSwitcherKey') ?? false);
 
     setState(() {
-      _counter = prefs.setInt('counter', counter).then((bool success) {
-        return counter;
-      });
+      if (prefs.getBool('boolSwitcherKey') == false) {
+        shouldRemind = prefs
+            .setBool('boolSwitcherKey', counter)
+            .then((bool success) => true);
+      } else {
+        shouldRemind = prefs
+            .setBool('boolSwitcherKey', counter)
+            .then((bool success) => false);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => changeColors(),
+        onTap: () => changeAndSafeBool(),
         child: Card(
           elevation: 10,
           margin: const EdgeInsets.all(2),
-          color: shouldRemind
-              ? const Color.fromARGB(255, 108, 0, 0)
-              : const Color.fromRGBO(32, 32, 32, 1),
+          color:
+              // shouldRemind
+              //     ? const Color.fromARGB(255, 108, 0, 0):
+              const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
               padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
               child: SizedBox(
@@ -87,13 +80,13 @@ class _CardState extends State<MyCard> {
                       // ])),
                       // Expanded(child: fighterPhoto(1)),
                       ElevatedButton.icon(
-                          onPressed: () => _incrementCounter(),
+                          onPressed: () => changeAndSafeBool(),
                           icon: const Icon(Icons.alarm),
                           label: const Text("dodaj")),
                       FutureBuilder(
-                          future: _counter,
+                          future: shouldRemind,
                           builder: (BuildContext context,
-                              AsyncSnapshot<int> snapshot) {
+                              AsyncSnapshot<bool> snapshot) {
                             switch (snapshot.connectionState) {
                               case ConnectionState.waiting:
                                 return const CircularProgressIndicator();

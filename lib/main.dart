@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 void main() async {
   runApp(const MyApp());
-  await AndroidAlarmManager.initialize();
 }
 
 class MyApp extends StatelessWidget {
