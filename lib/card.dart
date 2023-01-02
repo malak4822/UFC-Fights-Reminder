@@ -1,108 +1,86 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
   const MyCard({
     super.key,
-    required this.cardId,
     required this.fighterNames,
     required this.fightersUrl,
+    required this.cardId,
   });
 
   @override
   State<MyCard> createState() => _CardState();
   final int cardId;
-  final List<String> fighterNames;
   final List<String> fightersUrl;
+  final List<String> fighterNames;
 }
 
 class _CardState extends State<MyCard> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  late Future<bool> shouldRemind;
+  bool shouldRemind = false;
 
   @override
   void initState() {
+    loadData();
     super.initState();
-    shouldRemind = _prefs.then((SharedPreferences prefs) {
-      return prefs.getBool('boolSwitcherKey') ?? false;
+  }
+
+  loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      shouldRemind =
+          prefs.getBool('boolSwitcherKey + ${widget.cardId}') ?? false;
     });
   }
 
-  Future<void> changeAndSafeBool() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool counter = (prefs.getBool('boolSwitcherKey') ?? false);
-
-    setState(() {
-      if (prefs.getBool('boolSwitcherKey') == false) {
-        shouldRemind = prefs
-            .setBool('boolSwitcherKey', counter)
-            .then((bool success) => true);
-      } else {
-        shouldRemind = prefs
-            .setBool('boolSwitcherKey', counter)
-            .then((bool success) => false);
-      }
-    });
+  saveBool() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('boolSwitcherKey + ${widget.cardId}', shouldRemind);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () => changeAndSafeBool(),
+        onTap: () {
+          setState(() {
+            if (shouldRemind == true) {
+              shouldRemind = false;
+            } else {
+              shouldRemind = true;
+            }
+            saveBool();
+          });
+        },
         child: Card(
           elevation: 10,
           margin: const EdgeInsets.all(2),
-          color:
-              // shouldRemind
-              //     ? const Color.fromARGB(255, 108, 0, 0):
-              const Color.fromRGBO(32, 32, 32, 1),
+          color: shouldRemind
+              ? const Color.fromARGB(255, 108, 0, 0)
+              : const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
               padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
               child: SizedBox(
                   height: 180,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Expanded(child: fighterPhoto(0)),
-                      // Expanded(
-                      //     child: Column(children: [
-                      //   const SizedBox(height: 10),
-                      //   Icon(Icons.alarm,
-                      //       color: Colors.white, size: shouldRemind ? 52 : 38),
-                      //   const SizedBox(height: 14),
-                      //   Text(
-                      //     style: GoogleFonts.overpass(
-                      //         fontSize: 16, fontWeight: FontWeight.bold),
-                      //     '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
-                      //     textAlign: TextAlign.center,
-                      //   ),
-                      //   const Spacer()
-                      // ])),
-                      // Expanded(child: fighterPhoto(1)),
-                      ElevatedButton.icon(
-                          onPressed: () => changeAndSafeBool(),
-                          icon: const Icon(Icons.alarm),
-                          label: const Text("dodaj")),
-                      FutureBuilder(
-                          future: shouldRemind,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<bool> snapshot) {
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return const CircularProgressIndicator();
-                              default:
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  print(snapshot);
-
-                                  return Text(
-                                    'Button tapped ${snapshot.data} time${snapshot.data == 1 ? '' : 's'}.\n\n'
-                                    'This should persist across restarts.',
-                                  );
-                                }
-                            }
-                          })
+                      Expanded(child: fighterPhoto(0)),
+                      Expanded(
+                          child: Column(children: [
+                        const SizedBox(height: 10),
+                        Icon(Icons.alarm,
+                            color: Colors.white, size: shouldRemind ? 52 : 38),
+                        const SizedBox(height: 14),
+                        Text(
+                          style: GoogleFonts.overpass(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
+                          textAlign: TextAlign.center,
+                        ),
+                        const Spacer()
+                      ])),
+                      Expanded(child: fighterPhoto(1)),
                     ],
                   ))),
         ));
