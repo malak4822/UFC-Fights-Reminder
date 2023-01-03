@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loneguide/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
@@ -22,35 +23,43 @@ class _CardState extends State<MyCard> {
 
   @override
   void initState() {
-    loadData();
+    loadBool();
     super.initState();
   }
 
-  loadData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      shouldRemind =
-          prefs.getBool('boolSwitcherKey + ${widget.cardId}') ?? false;
-    });
+  void loadBool() async {
+    SharedPreferences sharedBool = await SharedPreferences.getInstance();
+    if (sharedBool.getBool('bool_num_${widget.cardId}') == true) {
+      setState(() {
+        shouldRemind = true;
+      });
+    }
   }
 
-  saveBool() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('boolSwitcherKey + ${widget.cardId}', shouldRemind);
+  void saveBool() async {
+    SharedPreferences sharedBool = await SharedPreferences.getInstance();
+    sharedBool.setBool('bool_num_${widget.cardId}', shouldRemind);
+  }
+
+  void removeBool() async {
+    SharedPreferences sharedBool = await SharedPreferences.getInstance();
+    sharedBool.remove('bool_num_${widget.cardId}');
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
+        onTap: () async {
           setState(() {
-            if (shouldRemind == true) {
-              shouldRemind = false;
-            } else {
+            if (shouldRemind == false) {
               shouldRemind = true;
+              saveBool();
+            } else {
+              shouldRemind = false;
+              removeBool();
             }
-            saveBool();
           });
+          SharedPreferences sharedBool = await SharedPreferences.getInstance();
         },
         child: Card(
           elevation: 10,
@@ -61,25 +70,25 @@ class _CardState extends State<MyCard> {
           child: Padding(
               padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
               child: SizedBox(
-                  height: 180,
+                  height: 160,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(child: fighterPhoto(0)),
                       Expanded(
-                          child: Column(children: [
-                        const SizedBox(height: 10),
-                        Icon(Icons.alarm,
-                            color: Colors.white, size: shouldRemind ? 52 : 38),
-                        const SizedBox(height: 14),
-                        Text(
-                          style: GoogleFonts.overpass(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
-                          textAlign: TextAlign.center,
-                        ),
-                        const Spacer()
-                      ])),
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                            Icon(Icons.alarm,
+                                color: Colors.white,
+                                size: shouldRemind ? 52 : 38),
+                            Text(
+                              style: GoogleFonts.overpass(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
+                              textAlign: TextAlign.center,
+                            ),
+                          ])),
                       Expanded(child: fighterPhoto(1)),
                     ],
                   ))),

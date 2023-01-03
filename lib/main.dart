@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -33,6 +34,8 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
+List<int> remindIndexList = [];
 
 class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
@@ -70,8 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
     imageUrls = imgs;
   }
-
-  List<int> remindIndexList = [];
 
   @override
   Widget build(BuildContext context) {
