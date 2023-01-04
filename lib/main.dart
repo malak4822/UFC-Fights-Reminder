@@ -1,11 +1,12 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   runApp(const MyApp());
+  await AndroidAlarmManager.initialize();
 }
 
 class MyApp extends StatelessWidget {
@@ -41,6 +42,14 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
   late int foundCards;
+
+  void es() {
+    print("xddd");
+  }
+
+  void aaaa() async {
+    AndroidAlarmManager.oneShot(const Duration(seconds: 2), id, es);
+  }
 
   Future getWebsiteBasics() async {
     final response =
@@ -116,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             cardId: index,
                             fighterNames: fightersNames[index],
                             fightersUrl: imageUrls[index],
+                            ktoDzwoni: aaaa,
                           ),
                         ),
                       ));
