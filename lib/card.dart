@@ -30,11 +30,11 @@ class _CardState extends State<MyCard> {
   void loadBool() async {
     SharedPreferences storageSavedBool = await SharedPreferences.getInstance();
     if (storageSavedBool.getBool('bool_num_${widget.cardId}') == true) {
+      remindIndexList.add(widget.cardId);
       setState(() {
         shouldRemind = true;
       });
     }
-    print(remindIndexList);
   }
 
   @override
