@@ -28,38 +28,34 @@ class _CardState extends State<MyCard> {
   }
 
   void loadBool() async {
-    SharedPreferences sharedBool = await SharedPreferences.getInstance();
-    if (sharedBool.getBool('bool_num_${widget.cardId}') == true) {
+    SharedPreferences storageSavedBool = await SharedPreferences.getInstance();
+    if (storageSavedBool.getBool('bool_num_${widget.cardId}') == true) {
       setState(() {
         shouldRemind = true;
       });
     }
-  }
-
-  void saveBool() async {
-    SharedPreferences sharedBool = await SharedPreferences.getInstance();
-    sharedBool.setBool('bool_num_${widget.cardId}', shouldRemind);
-  }
-
-  void removeBool() async {
-    SharedPreferences sharedBool = await SharedPreferences.getInstance();
-    sharedBool.remove('bool_num_${widget.cardId}');
+    print(remindIndexList);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
+          SharedPreferences storageSavedBool =
+              await SharedPreferences.getInstance();
           setState(() {
             if (shouldRemind == false) {
               shouldRemind = true;
-              saveBool();
+              remindIndexList.add(widget.cardId);
+              storageSavedBool.setBool(
+                  'bool_num_${widget.cardId}', shouldRemind);
             } else {
               shouldRemind = false;
-              removeBool();
+              remindIndexList.remove(widget.cardId);
+              storageSavedBool.remove('bool_num_${widget.cardId}');
             }
           });
-          SharedPreferences sharedBool = await SharedPreferences.getInstance();
+          print(remindIndexList);
         },
         child: Card(
           elevation: 10,

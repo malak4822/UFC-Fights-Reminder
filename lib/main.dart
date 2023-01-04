@@ -108,27 +108,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     if (snapshot.hasError) {
                       return const Text('Internet Connection Error');
                     } else {
-                      return ListView.builder(
-                        itemCount: foundCards,
-                        prototypeItem: ListTile(
-                          title: MyCard(
-                            cardId: 0,
-                            fighterNames: fightersNames.first,
-                            fightersUrl: imageUrls.first,
+                      return SingleChildScrollView(
+                          child: Column(
+                        children: List.generate(
+                          foundCards,
+                          (index) => MyCard(
+                            cardId: index,
+                            fighterNames: fightersNames[index],
+                            fightersUrl: imageUrls[index],
                           ),
                         ),
-                        itemBuilder: (BuildContext context, index) {
-                          return ListTile(
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 5),
-                            title: MyCard(
-                              cardId: index,
-                              fighterNames: fightersNames[index],
-                              fightersUrl: imageUrls[index],
-                            ),
-                          );
-                        },
-                      );
+                      ));
                     }
                   } else {
                     return Text('State: ${snapshot.connectionState}');
