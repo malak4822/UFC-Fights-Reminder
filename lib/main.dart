@@ -44,11 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
   late int foundCards;
 
   void es() {
-    print("xddd");
+    print("alarm o ${DateTime.now()}");
   }
 
-  void aaaa() async {
-    AndroidAlarmManager.oneShot(const Duration(seconds: 2), id, es);
+  void setupAlarm(index) async {
+    print('object');
+    AndroidAlarmManager.oneShot(const Duration(seconds: 2), index, es);
   }
 
   Future getWebsiteBasics() async {
@@ -119,15 +120,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     } else {
                       return SingleChildScrollView(
                           child: Column(
-                        children: List.generate(
-                          foundCards,
-                          (index) => MyCard(
+                        children: List.generate(foundCards, (index) {
+                          setupAlarm(index);
+                          return MyCard(
                             cardId: index,
                             fighterNames: fightersNames[index],
                             fightersUrl: imageUrls[index],
-                            ktoDzwoni: aaaa,
-                          ),
-                        ),
+                          );
+                        }),
                       ));
                     }
                   } else {

@@ -9,7 +9,6 @@ class MyCard extends StatefulWidget {
     required this.fighterNames,
     required this.fightersUrl,
     required this.cardId,
-    required this.ktoDzwoni,
   });
 
   @override
@@ -17,7 +16,6 @@ class MyCard extends StatefulWidget {
   final int cardId;
   final List<String> fightersUrl;
   final List<String> fighterNames;
-  final VoidCallback ktoDzwoni;
 }
 
 class _CardState extends State<MyCard> {
@@ -43,7 +41,6 @@ class _CardState extends State<MyCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          widget.ktoDzwoni();
           SharedPreferences storageSavedBool =
               await SharedPreferences.getInstance();
           setState(() {
