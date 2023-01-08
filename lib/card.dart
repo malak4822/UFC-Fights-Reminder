@@ -1,3 +1,4 @@
+// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/main.dart';
@@ -18,6 +19,10 @@ class MyCard extends StatefulWidget {
   final List<String> fighterNames;
 }
 
+void es() {
+  print(DateTime.now());
+}
+
 class _CardState extends State<MyCard> {
   bool shouldRemind = false;
 
@@ -34,8 +39,15 @@ class _CardState extends State<MyCard> {
       setState(() {
         shouldRemind = true;
       });
+      // setupAlarm();
     }
   }
+
+  // void setupAlarm() async {
+  //   await AndroidAlarmManager.periodic(
+  //       const Duration(minutes: 1), widget.cardId, es);
+  //   print('alarm setted up at ${DateTime.now()}');
+  // }
 
   @override
   Widget build(BuildContext context) {
