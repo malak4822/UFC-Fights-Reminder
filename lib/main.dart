@@ -44,8 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
 //Sun, Jan 22 / 4:00 AM CET
 
   Future getWebsiteBasics() async {
-    final response =
-        await http.get(Uri.parse("https://www.ufc.com/event/ufc-283"));
+    final response = await http.get(Uri.parse(
+        "https://www.ufc.com/event/ufc-fight-night-february-04-2023"));
     dom.Document html = dom.Document.html(response.body);
 
     final entireCard = html
@@ -69,6 +69,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 .replaceAll(
                     '/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png',
                     'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-left-silhouette.png')
+                .replaceAll(
+                    '/themes/custom/ufc/assets/img/standing-stance-right-silhouette.png',
+                    'https://www.ufc.com/themes/custom/ufc/assets/img/standing-stance-right-silhouette.png')
                 .replaceAll('/n', ' '))
             .toList())
         .toList();
