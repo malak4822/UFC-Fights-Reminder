@@ -1,7 +1,7 @@
-// import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/main.dart';
+import 'package:loneguide/notificationservice.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyCard extends StatefulWidget {
@@ -17,10 +17,6 @@ class MyCard extends StatefulWidget {
   final int cardId;
   final List<String> fightersUrl;
   final List<String> fighterNames;
-}
-
-void es() {
-  print(DateTime.now());
 }
 
 class _CardState extends State<MyCard> {
@@ -39,15 +35,8 @@ class _CardState extends State<MyCard> {
       setState(() {
         shouldRemind = true;
       });
-      // setupAlarm();
     }
   }
-
-  // void setupAlarm() async {
-  //   await AndroidAlarmManager.periodic(
-  //       const Duration(minutes: 1), widget.cardId, es);
-  //   print('alarm setted up at ${DateTime.now()}');
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -57,17 +46,25 @@ class _CardState extends State<MyCard> {
               await SharedPreferences.getInstance();
           setState(() {
             if (shouldRemind == false) {
+              NotificationService().showNotification(
+                1,
+                'Fight Is Starting',
+                'eeeee',
+                3,
+              );
               shouldRemind = true;
               remindIndexList.add(widget.cardId);
               storageSavedBool.setBool(
                   'bool_num_${widget.cardId}', shouldRemind);
+
+              // setupAlarm();
             } else {
+              NotificationService().cancelNotifications(widget.cardId);
               shouldRemind = false;
               remindIndexList.remove(widget.cardId);
               storageSavedBool.remove('bool_num_${widget.cardId}');
             }
           });
-          print(remindIndexList);
         },
         child: Card(
           elevation: 10,

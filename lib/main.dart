@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
+import 'package:loneguide/notificationservice.dart';
+import 'package:timezone/data/latest.dart' as timezone;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
   runApp(const MyApp());
 }
 
@@ -41,7 +45,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> imageUrls = [];
   late int foundCards;
 
-//Sun, Jan 22 / 4:00 AM CET
+  @override
+  void initState() {
+    timezone.initializeTimeZones();
+    super.initState();
+  }
 
   Future getWebsiteBasics() async {
     final response = await http.get(Uri.parse(
