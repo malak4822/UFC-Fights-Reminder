@@ -28,14 +28,18 @@ class NotificationService {
 
   Future<void> showNotification(
       int id, String title, String body, int seconds) async {
+    print(DateTime.now().timeZoneName);
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.now(tz.local),
+      tz.TZDateTime.now(tz.getLocation(DateTime.now().timeZoneName))
+          .add(Duration(seconds: seconds)),
       const NotificationDetails(
         android: AndroidNotificationDetails('main_channel', 'Main Channel',
             importance: Importance.max,
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound('alarm'),
             priority: Priority.max,
             icon: '@drawable/ic_flutternotification'),
       ),

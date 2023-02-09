@@ -45,12 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> imageUrls = [];
   late int foundCards;
 
-  @override
-  void initState() {
-    timezone.initializeTimeZones();
-    super.initState();
-  }
-
   Future getWebsiteBasics() async {
     final response = await http.get(Uri.parse(
         "https://www.ufc.com/event/ufc-fight-night-february-04-2023"));
@@ -84,6 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList())
         .toList();
     imageUrls = imgs;
+  }
+
+  @override
+  void initState() {
+    timezone.initializeTimeZones();
+    super.initState();
   }
 
   @override

@@ -47,17 +47,15 @@ class _CardState extends State<MyCard> {
           setState(() {
             if (shouldRemind == false) {
               NotificationService().showNotification(
-                1,
-                'Fight Is Starting',
-                'eeeee',
-                3,
+                widget.cardId,
+                '${widget.fighterNames[0]} VS ${widget.fighterNames[1]}',
+                'Wake up sleeping beauty ! Fight is will start soon !',
+                15,
               );
               shouldRemind = true;
               remindIndexList.add(widget.cardId);
               storageSavedBool.setBool(
                   'bool_num_${widget.cardId}', shouldRemind);
-
-              // setupAlarm();
             } else {
               NotificationService().cancelNotifications(widget.cardId);
               shouldRemind = false;
