@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
@@ -46,8 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late int foundCards;
 
   Future getWebsiteBasics() async {
-    final response = await http.get(Uri.parse(
-        "https://www.ufc.com/event/ufc-fight-night-february-04-2023"));
+    final response =
+        await http.get(Uri.parse("https://www.ufc.com/event/ufc-284"));
     dom.Document html = dom.Document.html(response.body);
 
     final entireCard = html
@@ -118,7 +119,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   } else if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
-                      return const Text('Internet Connection Error');
+                      return Center(
+                        child: Column(
+                          children: [
+                            const CircularProgressIndicator(),
+                            Text(
+                              'Internet Connection Error',
+                              style: GoogleFonts.overpass(fontSize: 40),
+                            ),
+                          ],
+                        ),
+                      );
                     } else {
                       return SingleChildScrollView(
                           child: Column(

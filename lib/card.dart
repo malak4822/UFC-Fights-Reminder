@@ -49,7 +49,7 @@ class _CardState extends State<MyCard> {
               NotificationService().showNotification(
                 widget.cardId,
                 '${widget.fighterNames[0]} VS ${widget.fighterNames[1]}',
-                'Wake up sleeping beauty ! Fight is will start soon !',
+                'Wake up sleeping beauty ! Fight will start soon !',
                 15,
               );
               shouldRemind = true;
