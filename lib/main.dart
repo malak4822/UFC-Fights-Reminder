@@ -45,22 +45,36 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
   late int foundCards;
+  Iterable mainFighterse = [];
+  Iterable prelims = [];
+  Iterable earlyPrelims = [];
+  List<String> timeAndHeadings = [];
 
   Future getWebsiteBasics() async {
     final response =
-        await http.get(Uri.parse("https://www.ufc.com/event/ufc-284"));
+        await http.get(Uri.parse("https://www.ufc.com/event/ufc-285"));
     dom.Document html = dom.Document.html(response.body);
 
-    final entireCard = html
-        .querySelectorAll("div > div.c-listing-fight__content-row")
-        .toList();
+    final entireCard =
+        html.querySelectorAll("div > div.c-listing-fight__content-row");
     foundCards = entireCard.length;
+
+    final main = html.getElementsByClassName("view-display-id-entity_view_1");
+
+    final pre = html.getElementsByClassName("view-display-id-entity_view_2");
+
+    final earlyPre =
+        html.getElementsByClassName("view-display-id-entity_view_3");
+
+    final mainFighters = main.map((e) => e
+        .getElementsByClassName("c-listing-fight__names-row")
+        .map((e) => e.text.trim().replaceAll('\n', ' ')));
+    mainFighterse = mainFighters;
 
     final fighterNames = entireCard
         .map((e) => e
             .getElementsByClassName('c-listing-fight__corner-name')
-            .map(
-                (e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
+            .map((e) => e.text.trim().replaceAll('\n', ' '))
             .toList())
         .toList();
     fightersNames = fighterNames;
@@ -104,17 +118,21 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: FutureBuilder(
+            child: ListView(
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  print("MAIN CARD \n $mainFighterse");
+                },
+                child: const Icon(Icons.abc)),
+            FutureBuilder(
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return ListView.builder(
                       itemCount: 5,
                       itemBuilder: (BuildContext context, index) {
-                        return ListTile(
-                            contentPadding:
-                                const EdgeInsets.symmetric(horizontal: 5),
-                            title: loadingCard());
+                        return loadingCard();
                       },
                     );
                   } else if (snapshot.connectionState == ConnectionState.done) {
@@ -145,13 +163,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return Text('State: ${snapshot.connectionState}');
                   }
-                }))));
+                }))
+          ],
+        )));
   }
 
   Widget loadingCard() => const Card(
-        elevation: 10,
-        color: Color.fromRGBO(32, 32, 32, 1),
-        child:
-            Padding(padding: EdgeInsets.only(), child: SizedBox(height: 180)),
-      );
+      elevation: 10,
+      color: Color.fromRGBO(32, 32, 32, 1),
+      child: Padding(
+        padding: EdgeInsets.only(top: 10, left: 8, right: 8),
+        child: SizedBox(height: 140),
+      ));
 }

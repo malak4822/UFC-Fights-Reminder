@@ -66,21 +66,20 @@ class _CardState extends State<MyCard> {
         },
         child: Card(
           elevation: 10,
-          margin: const EdgeInsets.all(2),
           color: shouldRemind
               ? const Color.fromARGB(255, 108, 0, 0)
               : const Color.fromRGBO(32, 32, 32, 1),
           child: Padding(
-              padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+              padding: const EdgeInsets.only(top: 10, left: 8, right: 8),
               child: SizedBox(
-                  height: 160,
+                  height: 140,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Expanded(child: fighterPhoto(0)),
+                      fighterPhoto(0),
                       Expanded(
                           child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                             Icon(Icons.alarm,
                                 color: Colors.white,
@@ -88,11 +87,11 @@ class _CardState extends State<MyCard> {
                             Text(
                               style: GoogleFonts.overpass(
                                   fontSize: 16, fontWeight: FontWeight.bold),
-                              '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]}',
+                              '${widget.fighterNames[0]} \n VS \n ${widget.fighterNames[1]} ',
                               textAlign: TextAlign.center,
                             ),
                           ])),
-                      Expanded(child: fighterPhoto(1)),
+                      fighterPhoto(1),
                     ],
                   ))),
         ));
@@ -101,6 +100,7 @@ class _CardState extends State<MyCard> {
   Widget fighterPhoto(int intFighter) => Image.network(
         widget.fightersUrl[intFighter],
         alignment: Alignment.topCenter,
+        width: 120,
         fit: BoxFit.cover,
         cacheWidth: (80 * MediaQuery.of(context).devicePixelRatio).round(),
         loadingBuilder: (BuildContext context, Widget child,
@@ -111,10 +111,11 @@ class _CardState extends State<MyCard> {
             return Image.asset(
               'assets/fighterImg.png',
               fit: BoxFit.cover,
+              width: 120,
               alignment: Alignment.topCenter,
               color: const Color.fromARGB(255, 69, 69, 69),
               cacheWidth:
-                  (60 * MediaQuery.of(context).devicePixelRatio).round(),
+                  (50 * MediaQuery.of(context).devicePixelRatio).round(),
             );
           }
         },
