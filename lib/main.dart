@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
@@ -45,10 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<List<String>> fightersNames = [];
   List<List<String>> imageUrls = [];
   late int foundCards;
-  Iterable mainFighterse = [];
-  Iterable prelims = [];
-  Iterable earlyPrelims = [];
+  late int mainNumber;
+  late int preNumber;
+
   List<String> timeAndHeadings = [];
+  late int cardIndex;
 
   Future getWebsiteBasics() async {
     final response =
@@ -59,25 +62,33 @@ class _MyHomePageState extends State<MyHomePage> {
         html.querySelectorAll("div > div.c-listing-fight__content-row");
     foundCards = entireCard.length;
 
-    final main = html.getElementsByClassName("view-display-id-entity_view_1");
+    final maine = html.querySelectorAll("#main-card > div > section > ul > li");
+    mainNumber = maine.length;
 
-    final pre = html.getElementsByClassName("view-display-id-entity_view_2");
+    final fightDate1 = entireCard.map((e) => e
+        .querySelectorAll(
+            'div > div.c-event-fight-card-broadcaster__mobile-wrapper')
+        .map((e) => e.text));
+    print(fightDate1);
 
-    final earlyPre =
-        html.getElementsByClassName("view-display-id-entity_view_3");
+    final pre =
+        html.querySelectorAll("#prelims-card > div > section > ul > li");
+    preNumber = pre.length;
 
-    final mainFighters = main.map((e) => e
-        .getElementsByClassName("c-listing-fight__names-row")
-        .map((e) => e.text.trim().replaceAll('\n', ' ')));
-    mainFighterse = mainFighters;
+    final fighterNamese = html
+        .getElementsByClassName('c-listing-fight__corner-name')
+        .map((e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
+        .toList();
 
     final fighterNames = entireCard
         .map((e) => e
             .getElementsByClassName('c-listing-fight__corner-name')
-            .map((e) => e.text.trim().replaceAll('\n', ' '))
+            .map(
+                (e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
             .toList())
         .toList();
     fightersNames = fighterNames;
+    print(fighterNamese);
 
     final imgs = entireCard
         .map((e) => e
@@ -118,14 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: ListView(
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  print("MAIN CARD \n $mainFighterse");
-                },
-                child: const Icon(Icons.abc)),
-            FutureBuilder(
+            child: FutureBuilder(
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -138,20 +142,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasError) {
                       return Center(
-                        child: Column(
-                          children: [
-                            const CircularProgressIndicator(),
-                            Text(
-                              'Internet Connection Error',
-                              style: GoogleFonts.overpass(fontSize: 40),
-                            ),
-                          ],
-                        ),
-                      );
+                          child: Column(children: [
+                        const CircularProgressIndicator(),
+                        Text(
+                          'Internet Connection Error',
+                          style: GoogleFonts.overpass(fontSize: 40),
+                        )
+                      ]));
                     } else {
                       return SingleChildScrollView(
                           child: Column(
                         children: List.generate(foundCards, (index) {
+                          cardIndex = index;
+
+                          if (index == 0) {
+                            return showTitles("MAIN CARD");
+                          }
+
+                          if (index == mainNumber) {
+                            return showTitles("PRELIMS");
+                          }
+
+                          if (index == mainNumber + preNumber) {
+                            return showTitles('EARLY PRELIMS');
+                          }
+
                           return MyCard(
                             cardId: index,
                             fighterNames: fightersNames[index],
@@ -163,9 +178,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return Text('State: ${snapshot.connectionState}');
                   }
-                }))
-          ],
-        )));
+                }))));
+  }
+
+  Widget showTitles(String txt) {
+    return Column(
+      children: [
+        Container(
+            padding: const EdgeInsets.only(top: 10),
+            width: double.infinity,
+            alignment: Alignment.center,
+            color: const Color.fromARGB(255, 108, 0, 0),
+            child: Text(
+              txt,
+              style: GoogleFonts.akronim(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 5,
+                  fontSize: 35),
+            )),
+        MyCard(
+          cardId: cardIndex,
+          fighterNames: fightersNames[cardIndex],
+          fightersUrl: imageUrls[cardIndex],
+        )
+      ],
+    );
   }
 
   Widget loadingCard() => const Card(
