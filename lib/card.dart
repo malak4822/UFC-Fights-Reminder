@@ -50,7 +50,6 @@ class _CardState extends State<MyCard> {
                 widget.cardId,
                 '${widget.fighterNames[0]} VS ${widget.fighterNames[1]}',
                 'Wake up sleeping beauty ! Fight will start soon !',
-                15,
               );
               shouldRemind = true;
               remindIndexList.add(widget.cardId);

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loneguide/card.dart';
@@ -49,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late int foundCards;
   late int mainNumber;
   late int preNumber;
+  late List<String> timeList;
 
   List<String> timeAndHeadings = [];
   late int cardIndex;
@@ -65,21 +64,17 @@ class _MyHomePageState extends State<MyHomePage> {
     final maine = html.querySelectorAll("#main-card > div > section > ul > li");
     mainNumber = maine.length;
 
-    final fightDate1 = entireCard.map((e) => e
-        .querySelectorAll(
-            'div > div.c-event-fight-card-broadcaster__mobile-wrapper')
-        .map((e) => e.text));
-    print(fightDate1);
-
     final pre =
         html.querySelectorAll("#prelims-card > div > section > ul > li");
     preNumber = pre.length;
 
-    final fighterNamese = html
-        .getElementsByClassName('c-listing-fight__corner-name')
-        .map((e) => e.text.trim().replaceAll('  ', '').replaceAll('\n', ' '))
+    final fightDates = html
+        .querySelectorAll(
+            'div.c-event-fight-card-broadcaster__mobile-wrapper > div.c-event-fight-card-broadcaster__time.tz-change-inner')
+        .map((e) => e.text.trim())
         .toList();
 
+    timeList = fightDates;
     final fighterNames = entireCard
         .map((e) => e
             .getElementsByClassName('c-listing-fight__corner-name')
@@ -88,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
             .toList())
         .toList();
     fightersNames = fighterNames;
-    print(fighterNamese);
 
     final imgs = entireCard
         .map((e) => e
@@ -156,15 +150,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           cardIndex = index;
 
                           if (index == 0) {
-                            return showTitles("MAIN CARD");
+                            return showTitles("MAIN CARD\n${timeList[0]}");
                           }
 
                           if (index == mainNumber) {
-                            return showTitles("PRELIMS");
+                            return showTitles("PRELIMS\n${timeList[1]}");
                           }
 
                           if (index == mainNumber + preNumber) {
-                            return showTitles('EARLY PRELIMS');
+                            return showTitles('EARLY PRELIMS\n${timeList[2]}');
                           }
 
                           return MyCard(
@@ -187,15 +181,15 @@ class _MyHomePageState extends State<MyHomePage> {
         Container(
             padding: const EdgeInsets.only(top: 10),
             width: double.infinity,
-            alignment: Alignment.center,
             color: const Color.fromARGB(255, 108, 0, 0),
             child: Text(
               txt,
+              textAlign: TextAlign.center,
               style: GoogleFonts.akronim(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 5,
-                  fontSize: 35),
+                  fontSize: 24),
             )),
         MyCard(
           cardId: cardIndex,

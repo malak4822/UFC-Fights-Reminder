@@ -27,15 +27,12 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> showNotification(
-      int id, String title, String body, int seconds) async {
+  Future<void> showNotification(int id, String title, String body) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      tz.TZDateTime.now(
-              tz.getLocation(await FlutterNativeTimezone.getLocalTimezone()))
-          .add(Duration(seconds: seconds)),
+      tz.TZDateTime.utc(2023, 3, 2, 23, 45),
       const NotificationDetails(
         android: AndroidNotificationDetails('main_channel', 'Main Channel',
             importance: Importance.max,
