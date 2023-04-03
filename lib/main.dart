@@ -1,15 +1,36 @@
+import 'dart:io';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loneguide/background_service.dart';
 import 'package:loneguide/card.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:loneguide/notificationservice.dart';
 import 'package:timezone/data/latest.dart' as timezone;
+import 'package:workmanager/workmanager.dart';
 
+const myTask = "zadanie";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService().initNotification();
+  initializeWorkManager();
+
   runApp(const MyApp());
+}
+
+void callbackDispatcher() {
+  WidgetsFlutterBinding.ensureInitialized();
+  print("Our background job ran!");
+}
+
+void initializeWorkManager() {
+  Workmanager().initialize(
+    callbackDispatcher,
+    isInDebugMode: true,
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -53,8 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
   late int cardIndex;
 
   Future getWebsiteBasics() async {
-    final response =
-        await http.get(Uri.parse("https://www.ufc.com/event/ufc-285"));
+    final response = await http.get(
+        Uri.parse("https://www.ufc.com/event/ufc-fight-night-march-25-2023"));
     dom.Document html = dom.Document.html(response.body);
 
     final entireCard =
@@ -106,6 +127,26 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
   }
 
+  static String simplePeriodicTask = "uno";
+
+  @pragma('vm:entry-point')
+  void callbackDispatcher() {
+    Workmanager().executeTask((task, inputData) async {
+      switch (simplePeriodicTask) {
+        case 'simplePeriodicTask':
+          periodicTask();
+          break;
+      }
+      print("essa");
+
+      return Future.value(true);
+    });
+  }
+
+  Future<void> periodicTask() async {
+    print('Periodic task executed at ${DateTime.now()}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -123,7 +164,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: FutureBuilder(
+            child: ListView(
+          children: [
+            ElevatedButton(
+                onPressed: Platform.isAndroid
+                    ? () {
+                        Workmanager().registerPeriodicTask(
+                          'simplePeriodicTask',
+                          'simplePeriodicTask',
+                        );
+                      }
+                    : null,
+                child: const Text("Register Periodic Task (Android)")),
+            FutureBuilder(
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -172,7 +225,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return Text('State: ${snapshot.connectionState}');
                   }
-                }))));
+                }))
+          ],
+        )));
   }
 
   Widget showTitles(String txt) {
