@@ -49,13 +49,24 @@ class MyApp extends StatelessWidget {
   }
 }
 
-void runMyIsolate(List<dynamic> args) {
+void myIsolate(SendPort isolateToMainStream) {
+  ReceivePort mainToIsolateStream = ReceivePort();
+  isolateToMainStream.send(mainToIsolateStream.sendPort);
+
+  mainToIsolateStream.listen((message) {
+    print('[mainToIsolateStream] $message');
+    exit(0);
+  });
+
   int suma = 0;
   for (int i = 0; i < 100000000; i++) {
     suma += i;
   }
-  var sendPort = args[0] as SendPort;
-  Isolate.exit(sendPort, '$args, a suma to -> $suma');
+
+  isolateToMainStream.send('This Is From My Isolate $suma');
+
+  // var sendPort = args[0] as SendPort;
+  // Isolate.exit(sendPort, '$args, a suma to -> $suma');
 }
 
 class MyHomePage extends StatefulWidget {
@@ -143,6 +154,24 @@ class _MyHomePageState extends State<MyHomePage> {
     imageUrls = imgs;
   }
 
+  Future<SendPort> initIsolate() async {
+    Completer completer = Completer();
+    ReceivePort isolateToMainStream = ReceivePort();
+
+    isolateToMainStream.listen((message) {
+      if (message is SendPort) {
+        print('MAIN THREAD IS SENDING DATA');
+        SendPort mainToIsolateStream = message;
+        completer.complete(mainToIsolateStream);
+      } else {
+        print('NOT MAIN THREAD IS SENDING DATA');
+        print('[isolateToMainStream] $message');
+      }
+    });
+    await Isolate.spawn(myIsolate, isolateToMainStream.sendPort);
+    return await completer.future;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,16 +180,16 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: Row(children: [
           FloatingActionButton(
               onPressed: () async {
+                // SendPort mainToIsolateStream = await initIsolate();
+                // mainToIsolateStream.send('This is From Main');
+
                 // Workmanager().registerOneOffTask(
                 //     "taskUno", "simpleTask",
                 //     initialDelay: const Duration(seconds: 5));
 
                 // TWORZENIE NOWEGO WĄTKU
 
-                // var receivePort = ReceivePort();
-                // await Isolate.spawn(
-                // runMyIsolate, [receivePort.sendPort, "My Custom Message"]);
-                // print(await receivePort.first);
+                initIsolate();
               },
               child: const Icon(Icons.zoom_out_rounded)),
           FloatingActionButton(
