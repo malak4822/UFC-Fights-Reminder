@@ -63,8 +63,7 @@ class _CardState extends State<MyCard> {
             }
           });
         },
-        child: Card(
-          elevation: 10,
+        child: Container(
           margin: const EdgeInsets.all(2),
           color: shouldRemind
               ? const Color.fromARGB(255, 108, 0, 0)

@@ -1,36 +1,32 @@
 import 'dart:io';
-import 'dart:ui';
-
+import 'dart:isolate';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:loneguide/background_service.dart';
 import 'package:loneguide/card.dart';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:loneguide/notificationservice.dart';
-import 'package:timezone/data/latest.dart' as timezone;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
-const myTask = "zadanie";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService().initNotification();
-  initializeWorkManager();
+
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
 
   runApp(const MyApp());
 }
 
+@pragma(
+    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void callbackDispatcher() {
-  WidgetsFlutterBinding.ensureInitialized();
-  print("Our background job ran!");
-}
-
-void initializeWorkManager() {
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true,
-  );
+  Workmanager().executeTask((task, inputData) {
+    print(
+        "Native called background task: $task, time is ${DateTime.now()}"); //simpleTask will be emitted here.
+    return Future.value(true);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -53,6 +49,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+void runMyIsolate(List<dynamic> args) {
+  int suma = 0;
+  for (int i = 0; i < 100000000; i++) {
+    suma += i;
+  }
+  var sendPort = args[0] as SendPort;
+  Isolate.exit(sendPort, '$args, a suma to -> $suma');
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -72,6 +77,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<String> timeAndHeadings = [];
   late int cardIndex;
+
+  @override
+  void initState() {
+    Workmanager().registerPeriodicTask(
+      'wakerUno',
+      'wakeTaskOne',
+      frequency: const Duration(minutes: 15),
+      initialDelay: const Duration(seconds: 5),
+      constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresCharging: false,
+          requiresBatteryNotLow: false,
+          requiresDeviceIdle: false,
+          requiresStorageNotLow: false),
+    );
+    super.initState();
+  }
 
   Future getWebsiteBasics() async {
     final response = await http.get(
@@ -122,34 +144,31 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void initState() {
-    timezone.initializeTimeZones();
-    super.initState();
-  }
-
-  static String simplePeriodicTask = "uno";
-
-  @pragma('vm:entry-point')
-  void callbackDispatcher() {
-    Workmanager().executeTask((task, inputData) async {
-      switch (simplePeriodicTask) {
-        case 'simplePeriodicTask':
-          periodicTask();
-          break;
-      }
-      print("essa");
-
-      return Future.value(true);
-    });
-  }
-
-  Future<void> periodicTask() async {
-    print('Periodic task executed at ${DateTime.now()}');
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.miniCenterDocked,
+        floatingActionButton: Row(children: [
+          FloatingActionButton(
+              onPressed: () async {
+                // Workmanager().registerOneOffTask(
+                //     "taskUno", "simpleTask",
+                //     initialDelay: const Duration(seconds: 5));
+
+                // TWORZENIE NOWEGO WĄTKU
+
+                // var receivePort = ReceivePort();
+                // await Isolate.spawn(
+                // runMyIsolate, [receivePort.sendPort, "My Custom Message"]);
+                // print(await receivePort.first);
+              },
+              child: const Icon(Icons.zoom_out_rounded)),
+          FloatingActionButton(
+              onPressed: () async {
+                Workmanager().cancelByUniqueName("taskUno");
+              },
+              child: const Icon(Icons.wrong_location)),
+        ]),
         appBar: AppBar(
           backgroundColor: Colors.black45,
           title: Row(
@@ -164,19 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         body: SafeArea(
-            child: ListView(
-          children: [
-            ElevatedButton(
-                onPressed: Platform.isAndroid
-                    ? () {
-                        Workmanager().registerPeriodicTask(
-                          'simplePeriodicTask',
-                          'simplePeriodicTask',
-                        );
-                      }
-                    : null,
-                child: const Text("Register Periodic Task (Android)")),
-            FutureBuilder(
+            child: FutureBuilder(
                 future: getWebsiteBasics(),
                 builder: ((context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -225,9 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   } else {
                     return Text('State: ${snapshot.connectionState}');
                   }
-                }))
-          ],
-        )));
+                }))));
   }
 
   Widget showTitles(String txt) {
@@ -255,10 +260,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget loadingCard() => const Card(
-      elevation: 10,
-      color: Color.fromRGBO(32, 32, 32, 1),
-      child: Padding(
+  Widget loadingCard() => Container(
+      color: const Color.fromRGBO(32, 32, 32, 1),
+      child: const Padding(
         padding: EdgeInsets.only(top: 10, left: 8, right: 8),
         child: SizedBox(height: 140),
       ));
