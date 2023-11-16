@@ -11,8 +11,9 @@ class DataScrapper {
     if (response.statusCode == 200) {
       final document = htmlParser.parse(response.body);
 
-      print('Title of the website: ${document.querySelector('title')?.text}');
-      print("Body: ${document.body}");
+      debugPrint(
+          'Title of the website: ${document.querySelector('title')?.text}');
+      debugPrint("Body: ${document.outerHtml}");
     } else {
       throw Exception('Failed to load website content');
     }

@@ -1,5 +1,3 @@
-
-
 class BackgroundService {
   BackgroundService(
     this.foundCards,

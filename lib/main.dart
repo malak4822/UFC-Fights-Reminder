@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:html/dom.dart' as dom;
 import 'package:loneguide/notificationservice.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 void main() async {
@@ -19,12 +18,12 @@ void main() async {
   runApp(const MyApp());
 }
 
-@pragma(
-    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+@pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) {
-    print(
-        "Native called background task: $task, time is ${DateTime.now()}"); //simpleTask will be emitted here.
+    NotificationService().requestForPermission();
+    NotificationService().showNotification(0, 'ESSSSA', 'BUDŹ SIĘ BIEDAKU');
+    print("Background Task: $task, time is ${DateTime.now()}");
     return Future.value(true);
   });
 }
@@ -89,23 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> timeAndHeadings = [];
   late int cardIndex;
 
-  @override
-  void initState() {
-    Workmanager().registerPeriodicTask(
-      'wakerUno',
-      'wakeTaskOne',
-      frequency: const Duration(minutes: 15),
-      initialDelay: const Duration(seconds: 5),
-      constraints: Constraints(
-          networkType: NetworkType.connected,
-          requiresCharging: false,
-          requiresBatteryNotLow: false,
-          requiresDeviceIdle: false,
-          requiresStorageNotLow: false),
-    );
-    super.initState();
-  }
-
   Future getWebsiteBasics() async {
     final response = await http.get(
         Uri.parse("https://www.ufc.com/event/ufc-fight-night-march-25-2023"));
@@ -154,24 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
     imageUrls = imgs;
   }
 
-  Future<SendPort> initIsolate() async {
-    Completer completer = Completer();
-    ReceivePort isolateToMainStream = ReceivePort();
-
-    isolateToMainStream.listen((message) {
-      if (message is SendPort) {
-        print('MAIN THREAD IS SENDING DATA');
-        SendPort mainToIsolateStream = message;
-        completer.complete(mainToIsolateStream);
-      } else {
-        print('NOT MAIN THREAD IS SENDING DATA');
-        print('[isolateToMainStream] $message');
-      }
-    });
-    await Isolate.spawn(myIsolate, isolateToMainStream.sendPort);
-    return await completer.future;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,23 +144,31 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: Row(children: [
           FloatingActionButton(
               onPressed: () async {
-                // SendPort mainToIsolateStream = await initIsolate();
-                // mainToIsolateStream.send('This is From Main');
+                Workmanager().registerOneOffTask("taskUno", "simpleTask",
+                    initialDelay: const Duration(seconds: 2));
 
-                // Workmanager().registerOneOffTask(
-                //     "taskUno", "simpleTask",
-                //     initialDelay: const Duration(seconds: 5));
+                // DataScrapper().downloadWebsiteContent();
 
-                // TWORZENIE NOWEGO WĄTKU
-
-                initIsolate();
+                // Workmanager().registerPeriodicTask(
+                //   'wakerUno',
+                //   'wakeTaskOne',
+                //   frequency: const Duration(minutes: 15),
+                //   initialDelay: const Duration(seconds: 5),
+                //   constraints: Constraints(
+                //       networkType: NetworkType.connected,
+                //       requiresCharging: false,
+                //       requiresBatteryNotLow: false,
+                //       requiresDeviceIdle: false,
+                //       requiresStorageNotLow: false),
+                // );
               },
-              child: const Icon(Icons.zoom_out_rounded)),
+              child: const Icon(Icons.add)),
           FloatingActionButton(
               onPressed: () async {
-                Workmanager().cancelByUniqueName("taskUno");
+                Workmanager().cancelAll();
+                // Workmanager().cancelByUniqueName("wakerUno");
               },
-              child: const Icon(Icons.wrong_location)),
+              child: const Icon(Icons.remove)),
         ]),
         appBar: AppBar(
           backgroundColor: Colors.black45,
