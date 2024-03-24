@@ -8,3 +8,9 @@ This is a Flutter project. The app downloads fighters' data by scraping data usi
 
 ## Bugs & Tips
 If you encounter any bugs or unnecessary lines of code, please email me at: kmalak4822@gmail.com
+
+## Screenshots
+![image](https://github.com/malak4822/UFC-Fights-Reminder/assets/71153710/7f3e0c00-710f-46a2-9103-1f2ead3f01c6)
+![image](https://github.com/malak4822/UFC-Fights-Reminder/assets/71153710/87d42c8d-befb-4b88-8192-f2f72cf8d4fd)
+
+
